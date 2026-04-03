@@ -1,5 +1,5 @@
 {
-  "appId": "com.soaringvibes.flightsimulator",
+  "appId": "net.tylereastman.soaringvibes",
   "appName": "Soaring Vibes",
   "webDir": "www",
   "bundledWebRuntime": false,
