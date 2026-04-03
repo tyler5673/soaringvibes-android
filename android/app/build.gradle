@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "com.soaringvibes.flightsimulator"
+    namespace = "net.tylereastman.soaringvibes"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.soaringvibes.flightsimulator"
+        applicationId "net.tylereastman.soaringvibes"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

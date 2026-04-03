@@ -2,6 +2,6 @@
 <resources>
     <string name="app_name">Soaring Vibes</string>
     <string name="title_activity_main">Soaring Vibes</string>
-    <string name="package_name">com.soaringvibes.flightsimulator</string>
-    <string name="custom_url_scheme">com.soaringvibes.flightsimulator</string>
+    <string name="package_name">net.tylereastman.soaringvibes</string>
+    <string name="custom_url_scheme">net.tylereastman.soaringvibes</string>
 </resources>
