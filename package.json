@@ -1,0 +1,44 @@
+{
+  "name": "soaring-vibes",
+  "version": "0.1.0",
+  "description": "Browser-based flight simulator featuring Hawaiian islands",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "build": "npx cap copy",
+    "android:copy": "npx cap copy android",
+    "android:open": "npx cap open android",
+    "android:build": "npx cap copy android && cd android && ./gradlew assembleDebug"
+  },
+  "keywords": [
+    "flight-simulator",
+    "threejs",
+    "hawaii"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^30.3.0",
+    "jest-environment-jsdom": "^30.3.0",
+    "ts-jest": "^29.4.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tyler5673/soaringvibes-android.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tyler5673/soaringvibes-android/issues"
+  },
+  "homepage": "https://github.com/tyler5673/soaringvibes-android#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.3.0",
+    "@capacitor/cli": "^8.3.0",
+    "@capacitor/core": "^8.3.0"
+  }
+}

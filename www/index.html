@@ -1,0 +1,1977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Soaring Vibes</title>
+    <link rel="icon" type="image/png" href="assets/images/icon.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="loading">
+        <div class="loading-clouds">
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+        </div>
+            <!-- <div id="loading-bottom-left">
+                <a href="https://ko-fi.com/tylereastman" target="_blank" id="kofi-button">
+                    <img src="https://cdn.ko-fi.com/cdn/kofi3.png?v=3" alt="Buy Me a Coffee">
+                </a>
+            </div> -->
+        
+        <div id="loading-content">
+            <img src="assets/images/logo.png" id="loading-logo" alt="Soaring Vibes">
+            <div id="loading-text">Loading Flight Simulator...</div>
+            <div id="loading-bar"><div id="loading-bar-fill"></div><div id="loading-plane"><img src="assets/images/icon.png" alt="plane"></div></div>
+            <button id="start-button" style="display: none;">Let's Soar!</button>
+            
+            <div id="selection-area">
+                <div class="selection-row">
+                    <label for="plane-name">Plane Name:</label>
+                    <button id="random-name-btn" class="dice-btn" title="Random name">🎲</button>
+                    <input type="text" id="plane-name" placeholder="Enter name">
+                </div>
+                <div class="selection-row">
+                    <label>Main Color:</label>
+                    <button id="random-main-color-btn" class="dice-btn" title="Random main color">🎲</button>
+                    <div class="color-selector-with-arrows">
+                        <button class="color-arrow-btn" id="main-color-left" title="Previous">◀</button>
+                        <div class="selected-color-display" id="main-color-display"></div>
+                        <button class="color-arrow-btn" id="main-color-right" title="Next">▶</button>
+                    </div>
+                </div>
+                <div class="selection-row">
+                    <label>Highlight:</label>
+                    <button id="random-highlight-btn" class="dice-btn" title="Random highlight">🎲</button>
+                    <div class="color-selector-with-arrows">
+                        <button class="color-arrow-btn" id="highlight-color-left" title="Previous">◀</button>
+                        <div class="selected-color-display" id="highlight-color-display"></div>
+                        <button class="color-arrow-btn" id="highlight-color-right" title="Next">▶</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Color picker modal -->
+            <div id="color-picker-modal" class="modal">
+                    <div class="modal-content color-picker-container">
+                        <div class="color-picker-layout">
+                            <div id="color-picker-preview"></div>
+                            <div class="rgb-color-picker">
+                                <div class="slider-row">
+                                    <label style="color: #ff6b6b;">R</label>
+                                    <input type="range" id="red-slider" min="0" max="255" value="79">
+                                    <span id="red-value" style="color: #ff6b6b;">79</span>
+                                </div>
+                                <div class="slider-row">
+                                    <label style="color: #4ecdc4;">G</label>
+                                    <input type="range" id="green-slider" min="0" max="255" value="195">
+                                    <span id="green-value" style="color: #4ecdc4;">195</span>
+                                </div>
+                                <div class="slider-row">
+                                    <label style="color: #45b7d1;">B</label>
+                                    <input type="range" id="blue-slider" min="0" max="255" value="247">
+                                    <span id="blue-value" style="color: #45b7d1;">247</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="color-picker-ok" class="color-picker-ok-btn">Ok!</button>
+                    </div>
+            </div>
+        </div>
+        
+        <div id="loading-top-left">
+            <div id="loading-links">
+                <a href="/viewer" id="asset-viewer-button">Open Asset Viewer</a>
+                <a href="http://multiplayer.soaringvibes.com/" id="server-button" target="_blank" title="Server">⚙️</a>
+                <a href="https://github.com/tyler5673/soaringVibes" id="repo-button" target="_blank" title="GitHub">📂</a>
+            </div>
+        </div>
+        <div id="loading-tagline">Built with prompts. Fueled by vibes. Powered by open source.</div>
+        <div id="loading-version">v0.1.0</div>
+    </div>
+    
+    <!-- Settings modal - outside loading so it shows during gameplay -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content settings-container">
+            <button id="settings-close-btn" class="settings-close-btn">&times;</button>
+            <h2 class="settings-title">Configuration</h2>
+            
+            <div class="settings-section" id="preset-section">
+                <div class="setting-row">
+                    <label for="preset-select">Preset</label>
+                    <div class="setting-control">
+                        <select id="preset-select" class="setting-select">
+                            <option value="desktop">Default</option>
+                            <option value="mobile">Mobile Optimized</option>
+                            <option value="highPerformance">High Performance</option>
+                            <option value="ultra">Ultra</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-section" id="veg-section">
+                <div class="settings-section-header">
+                    <h3 class="settings-section-title">Vegetation</h3>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="veg-toggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="veg-distance-slider">Draw Distance</label>
+                    <div class="setting-control">
+                        <input type="range" id="veg-distance-slider" min="200" max="5000" value="1300" step="50">
+                        <span id="veg-distance-value" class="setting-value">1300m</span>
+                    </div>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="veg-density-slider">Density</label>
+                    <div class="setting-control">
+                        <input type="range" id="veg-density-slider" min="0" max="200" value="100" step="5">
+                        <span id="veg-density-value" class="setting-value">100%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-section" id="building-section">
+                <div class="settings-section-header">
+                    <h3 class="settings-section-title">Buildings</h3>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="building-toggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="building-distance-slider">Draw Distance</label>
+                    <div class="setting-control">
+                        <input type="range" id="building-distance-slider" min="200" max="10000" value="3500" step="100">
+                        <span id="building-distance-value" class="setting-value">3500m</span>
+                    </div>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="building-density-slider">Density</label>
+                    <div class="setting-control">
+                        <input type="range" id="building-density-slider" min="0" max="200" value="100" step="5">
+                        <span id="building-density-value" class="setting-value">100%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-section" id="fauna-section">
+                <div class="settings-section-header">
+                    <h3 class="settings-section-title">Fauna</h3>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="fauna-toggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="fauna-distance-slider">Draw Distance</label>
+                    <div class="setting-control">
+                        <input type="range" id="fauna-distance-slider" min="1000" max="20000" value="6000" step="500">
+                        <span id="fauna-distance-value" class="setting-value">6000m</span>
+                    </div>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="fauna-density-slider">Count</label>
+                    <div class="setting-control">
+                        <input type="range" id="fauna-density-slider" min="0" max="200" value="100" step="5">
+                        <span id="fauna-density-value" class="setting-value">100%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-section" id="cloud-section">
+                <div class="settings-section-header">
+                    <h3 class="settings-section-title">Clouds</h3>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="cloud-toggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="cloud-count-slider">Cloud Count</label>
+                    <div class="setting-control">
+                        <input type="range" id="cloud-count-slider" min="0" max="300" value="100" step="10">
+                        <span id="cloud-count-value" class="setting-value">100</span>
+                    </div>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="cloud-distance-slider">Draw Distance</label>
+                    <div class="setting-control">
+                        <input type="range" id="cloud-distance-slider" min="5000" max="30000" value="15000" step="500">
+                        <span id="cloud-distance-value" class="setting-value">15000m</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-section" id="boats-section">
+                <div class="settings-section-header">
+                    <h3 class="settings-section-title">Boats</h3>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="boats-toggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="boats-distance-slider">Draw Distance</label>
+                    <div class="setting-control">
+                        <input type="range" id="boats-distance-slider" min="500" max="20000" value="8000" step="500">
+                        <span id="boats-distance-value" class="setting-value">8000m</span>
+                    </div>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="boats-density-slider">Count</label>
+                    <div class="setting-control">
+                        <input type="range" id="boats-density-slider" min="0" max="200" value="100" step="5">
+                        <span id="boats-density-value" class="setting-value">100%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-section" id="balloons-section">
+                <div class="settings-section-header">
+                    <h3 class="settings-section-title">Hot Air Balloons</h3>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="balloons-toggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="balloons-distance-slider">Distance</label>
+                    <div class="setting-control">
+                        <input type="range" id="balloons-distance-slider" min="1000" max="20000" value="6000" step="500">
+                        <span id="balloons-distance-value" class="setting-value">6000m</span>
+                    </div>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="balloons-density-slider">Count</label>
+                    <div class="setting-control">
+                        <input type="range" id="balloons-density-slider" min="0" max="200" value="100" step="5">
+                        <span id="balloons-density-value" class="setting-value">100%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-section" id="abby-mode-section">
+                <div class="settings-section-header">
+                    <h3 class="settings-section-title">Abby Mode (No Crash)</h3>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="abby-mode-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-section" id="labels-section">
+                <div class="settings-section-header">
+                    <h3 class="settings-section-title">Labels</h3>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="cruise-ship-labels-toggle">Cruise Ship Marker</label>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="cruise-ship-labels-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-section" id="wireframe-section">
+                <div class="settings-section-header">
+                    <h3 class="settings-section-title">Render Mode</h3>
+                </div>
+                <div class="setting-row">
+                    <label for="wireframe-select">Display</label>
+                    <div class="setting-control">
+                        <select id="wireframe-select" class="setting-select">
+                            <option value="normal">Normal</option>
+                            <option value="overlay">Normal + Wireframe</option>
+                            <option value="wireframe">Wireframe Only</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Desktop buttons - outside loading so they show during gameplay -->
+    <div id="desktop-menu-btn" class="desktop-menu-button" title="Change name or colors">
+        <img src="assets/images/icon.png" alt="Menu">
+    </div>
+    <button id="desktop-reset-btn" class="desktop-reset-button" title="Reset Aircraft (R)">↻</button>
+    <button id="desktop-settings-btn" class="desktop-settings-button" title="Settings">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1115.6 12 3.6 3.6 0 0112 15.6z"/></svg>
+    </button>
+    <div id="hud">
+        <div class="gauges">
+            <!-- Airspeed Indicator -->
+            <div class="gauge-container">
+                <svg class="gauge" id="speed-gauge" viewBox="0 0 140 140">
+                    <defs>
+                        <linearGradient id="gaugeFace" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#e8e4dc"/>
+                            <stop offset="50%" stop-color="#d4cfc4"/>
+                            <stop offset="100%" stop-color="#b8b2a4"/>
+                        </linearGradient>
+                        <linearGradient id="gaugeBezel" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#8a8478"/>
+                            <stop offset="50%" stop-color="#5c5850"/>
+                            <stop offset="100%" stop-color="#3a3732"/>
+                        </linearGradient>
+                        <filter id="gaugeShadow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.4"/>
+                        </filter>
+                        <linearGradient id="glassShine" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="rgba(255,255,255,0.3)"/>
+                            <stop offset="40%" stop-color="rgba(255,255,255,0)"/>
+                            <stop offset="100%" stop-color="rgba(255,255,255,0.05)"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Outer bezel -->
+                    <circle cx="70" cy="70" r="68" fill="url(#gaugeBezel)"/>
+                    <!-- Inner bezel ring -->
+                    <circle cx="70" cy="70" r="62" fill="#2a2824" stroke="#1a1815" stroke-width="2"/>
+                    <!-- Gauge face -->
+                    <circle cx="70" cy="70" r="58" fill="url(#gaugeFace)" filter="url(#gaugeShadow)"/>
+                    <!-- Inner ring -->
+                    <circle cx="70" cy="70" r="54" fill="none" stroke="#99948a" stroke-width="1"/>
+                    <!-- Speed markings -->
+                    <g class="gauge-marks" id="speed-marks"></g>
+                    <g class="gauge-labels" id="speed-labels"></g>
+                    <!-- Colored arcs - Cessna 182 normal operating range -->
+                    <path d="M 28 100 A 50 50 0 0 1 112 100" fill="none" stroke="rgba(0,120,0,0.25)" stroke-width="14"/>
+                    <path d="M 112 100 A 50 50 0 0 1 112 55" fill="none" stroke="rgba(180,0,0,0.2)" stroke-width="14"/>
+                    <!-- Warning arc -->
+                    <path d="M 20 95 A 55 55 0 0 1 28 100" fill="none" stroke="rgba(200,150,0,0.3)" stroke-width="3"/>
+                    <!-- Screw detail -->
+                    <circle cx="70" cy="118" r="4" fill="#555"/>
+                    <circle cx="70" cy="118" r="2" fill="#333"/>
+                    <line x1="68" y1="116" x2="72" y2="120" stroke="#777" stroke-width="1"/>
+                    <!-- Needle -->
+                    <g id="speed-needle">
+                        <polygon points="70,22 66,70 70,78 74,70" fill="#1a1a1a"/>
+                        <polygon points="70,28 68,68 70,72 72,68" fill="#c41e3a"/>
+                        <circle cx="70" cy="70" r="8" fill="#1a1a1a"/>
+                        <circle cx="70" cy="70" r="5" fill="#888"/>
+                    </g>
+                    <text x="70" y="108" text-anchor="middle" font-size="9" font-family="'Courier New', monospace" font-weight="bold" fill="#222">KTS</text>
+                    <!-- Glass effect -->
+                    <circle cx="70" cy="70" r="55" fill="url(#glassShine)" opacity="0.4"/>
+                </svg>
+                <div class="gauge-label">AIRSPEED</div>
+            </div>
+            
+            <!-- Altimeter -->
+            <div class="gauge-container">
+                <svg class="gauge" id="altitude-gauge" viewBox="0 0 140 140">
+                    <circle cx="70" cy="70" r="68" fill="url(#gaugeBezel)"/>
+                    <circle cx="70" cy="70" r="62" fill="#2a2824" stroke="#1a1815" stroke-width="2"/>
+                    <circle cx="70" cy="70" r="58" fill="url(#gaugeFace)" filter="url(#gaugeShadow)"/>
+                    <circle cx="70" cy="70" r="54" fill="none" stroke="#99948a" stroke-width="1"/>
+                    <g class="gauge-marks" id="altitude-marks"></g>
+                    <g class="gauge-labels" id="altitude-labels"></g>
+                    <!-- Screw detail -->
+                    <circle cx="70" cy="118" r="4" fill="#555"/>
+                    <circle cx="70" cy="118" r="2" fill="#333"/>
+                    <line x1="68" y1="116" x2="72" y2="120" stroke="#777" stroke-width="1"/>
+                    <!-- Altimeter needles -->
+                    <g id="altitude-needles">
+                        <g class="alt-needle" id="alt-needle-10k">
+                            <polygon points="70,28 67,70 70,74 73,70" fill="#1a1a1a" stroke="#333" stroke-width="1"/>
+                        </g>
+                        <g class="alt-needle" id="alt-needle-1k">
+                            <polygon points="70,32 66,70 70,82 74,70" fill="#1a1a1a"/>
+                        </g>
+                        <g class="alt-needle" id="alt-needle-100">
+                            <polygon points="70,38 64,70 70,95 76,70" fill="#c41e3a" stroke="#8b0000" stroke-width="1"/>
+                        </g>
+                        <circle cx="70" cy="70" r="8" fill="#1a1a1a"/>
+                        <circle cx="70" cy="70" r="5" fill="#888"/>
+                    </g>
+                    <text x="70" y="108" text-anchor="middle" font-size="9" font-family="'Courier New', monospace" font-weight="bold" fill="#222">FEET</text>
+                    <circle cx="70" cy="70" r="55" fill="url(#glassShine)" opacity="0.4"/>
+                </svg>
+                <div class="gauge-label">ALTITUDE</div>
+            </div>
+            
+        </div>
+            
+
+        </div>
+        <div id="controls-hint">WASD: Pitch/Roll | QE: Yaw | Shift/Ctrl: Throttle | Space: Brake | R: Reset | C: Config</div>
+    </div>
+    <div id="crash-message">
+        <div class="crash-text">Crashed!</div>
+        <button id="reset-btn" onclick="aircraft.reset(); hideCrashMessage(); orbitCamera.resetBehindTarget();">Reset</button>
+    </div>
+    <div id="touch-controls" style="display: none;">
+        <!-- Throttle+Rudder Joystick (square zone on left) -->
+        <div id="throttle-rudder-zone" class="throttle-rudder-container">
+            <div class="throttle-rudder-zone-bg">
+                <div id="throttle-rudder-stick" class="throttle-rudder-stick"></div>
+            </div>
+        </div>
+        
+        <!-- Right stick: Pitch (vertical) + Roll (horizontal) -->
+        <div id="right-stick-zone" class="touch-zone">
+            <div id="right-stick" class="touch-stick"></div>
+        </div>
+        
+        <!-- Reset button -->
+        <div id="reset-btn-touch" class="reset-icon-button" title="Reset Aircraft">↻</div>
+        
+        <!-- Settings button -->
+        <div id="settings-btn-touch" class="settings-button-touch" title="Settings">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1115.6 12 3.6 3.6 0 0112 15.6z"/></svg>
+        </div>
+        
+        <!-- Back to menu button -->
+        <div id="menu-btn" class="menu-button" title="Change name or colors">
+            <img src="assets/images/icon.png" alt="Menu">
+        </div>
+    </div>
+    
+    <!-- 2D Distance indicator dots container - always on top of 3D -->
+    <div id="distance-dots-container" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000;"></div>
+<div id="cruise-ship-marker"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/config.js"></script>
+
+        <!-- Core game modules -->
+        <script src="js/multiplayer.js"></script>
+    <script src="js/controls.js"></script>
+    <script src="js/aircraft.js"></script>
+    <script src="js/camera.js"></script>
+    <script src="js/ocean.js"></script>
+    <script src="js/environment.js"></script>
+    <script src="js/islands.js"></script>
+    <script src="js/airport.js"></script>
+    <script src="js/airport-map-parser.js"></script>
+    <script src="js/boats.js"></script>
+    <script src="js/gauges.js"></script>
+    <script src="js/performance.js"></script>
+    <script src="js/spatial-grid.js"></script>
+    
+    <!-- Tree Geometry Classes -->
+    <script src="js/trees/palm.js"></script>
+    <script src="js/trees/coconut-palm.js"></script>
+    <script src="js/trees/koa.js"></script>
+    <script src="js/trees/giant-koa.js"></script>
+    <script src="js/trees/ohia.js"></script>
+    <script src="js/trees/banyan.js"></script>
+    <script src="js/trees/tree-fern.js"></script>
+    <script src="js/trees/ti-plant.js"></script>
+    <script src="js/trees/bamboo.js"></script>
+    <script src="js/trees/wiliwili.js"></script>
+    <script src="js/trees/shrub.js"></script>
+    <script src="js/trees/grass.js"></script>
+    <script src="js/trees/ground-fern.js"></script>
+    <script src="js/trees/naupaka.js"></script>
+    <script src="js/trees/beach-morning-glory.js"></script>
+    <script src="js/trees/driftwood.js"></script>
+    <script src="js/trees/lava-rock.js"></script>
+    <!-- Buildings -->
+    <script src="js/buildings/residential.js"></script>
+    <script src="js/buildings/commercial.js"></script>
+    <script src="js/buildings/lighthouse.js"></script>
+    <script src="js/flora-manager.js"></script>
+    <script src="js/building-manager.js"></script>
+    <script src="js/hot-air-balloons.js"></script>
+    
+    <!-- Animal Base Class -->
+    <script src="js/animals/animal-base.js"></script>
+    <!-- Animal Species -->
+    <script src="js/animals/whale.js"></script>
+    <script src="js/animals/dolphin.js"></script>
+    <script src="js/animals/seaturtle.js"></script>
+    <script src="js/animals/albatross.js"></script>
+    <script src="js/animals/frigatebird.js"></script>
+    <script src="js/animals/honeycreeper.js"></script>
+    <script src="js/animals/nene.js"></script>
+    <script src="js/fauna-manager.js"></script>
+    <script>
+// ========== NAME & COLOR SELECTION ==========
+const planeNames = [
+    "Spirit", "Wanderer", "Phantom", "Valkyrie", "Thunder", "Shadow",
+    "Aurora", "Venom", "Blaze", "Storm", "Ghost", "Raptor",
+    "Falcon", "Eagle", "Hawk", "Viper", "Specter", "Wraith",
+    "Nighthawk", "Silver Arrow", "Midnight", "Golden Eagle", "White Knight"
+];
+
+const mainColors = [
+    "#ffffff", "#e3f2fd", "#e8f5e9", "#f3e5f5", "#fff3e0",
+    "#fce4ec", "#e0f7fa", "#f1f8e9", "#fff8e1", "#eceff1",
+    "#cfd8dc", "#b0bec5", "#90a4ae", "#78909c", "#546e7a",
+    "#5c6bc0", "#7e57c2", "#5e35b1", "#3949ab", "#1a237e",
+    "#283593", "#303f9f", "#3949ab", "#3f51b5", "#4285f4",
+    "#448aff", "#2979ff", "#29b6f6", "#00bcd4", "#0097a7",
+    "#00838f", "#006064", "#00acc1", "#00bcd4", "#4dd0e2",
+    "#18ffff", "#69f0ae", "#b9f6ca", "#ccff90", "#dce775",
+    "#f0f4c3", "#f9fbc7", "#fef9c7", "#fff9c4", "#ffecb3",
+    "#ffe082", "#ffd54f", "#ffca28", "#ffb74d", "#ff9800",
+    "#ef6c00", "#e65100", "#d84315", "#bf360c", "#795548",
+    "#8d6e63", "#a1887f", "#bc987b", "#d7ccc8", "#efebe9",
+    "#f5f5f5", "#eeeeee", "#e0e0e0", "#bdbdbd", "#9e9e9e",
+    "#757575", "#616161", "#424242", "#212121"
+];
+
+const highlightColors = [
+    "#1565c0", "#0d47a1", "#0039cb", "#0052a3", "#0066cc",
+    "#1976d2", "#1976d2", "#303f9f", "#5e35b1", "#673ab7",
+    "#512da8", "#d81b60", "#ad1457", "#880e4f", "#c2185b",
+    "#ff1744", "#f44336", "#e53935", "#d32f2f", "#b71c1c",
+    "#ff5722", "#e64a19", "#f57c00", "#ff8f00", "#ffab00",
+    "#ffca28", "#ffc107", "#ffb300", "#ffca28", "#ffd54f",
+    "#cddc39", "#dce623", "#9ccc62", "#7cb342", "#558b2f",
+    "#33691e", "#388e3c", "#43a047", "#66bb6a", "#81c784",
+    "#a5d6a7", "#69f0ae", "#00e676", "#00c853", "#009624",
+    "#00bfa5", "#26a69a", "#00acc1", "#26c6da", "#4dd0e1",
+    "#29b6f6", "#4fc3f7", "#81d4fa", "#b3e5fc", "#80deea",
+    "#4db6ac", "#80cbc4", "#4db6ac", "#26a69a", "#00897b",
+    "#a1887f", "#8d6e63", "#795548", "#5d4037", "#3e2723",
+    "#8e24aa", "#6a1b9a", "#4a148c", "#7b1fa2", "#8e24aa",
+    "#ab47bc", "#8e24aa", "#ab47bc", "#7e57c2", "#5e35b1",
+    "#512da8", "#6200ea", "#311b92", "#3d00c4", "#4a148c",
+    "#6a1b9a", "#8e24aa", "#ab47bc", "#ce93d8", "#e1bee7"
+];
+
+const loadingMessages = [
+    "Reticulating splines...",
+    "Feeding the dolphins...",
+    "Polishing the propeller...",
+    "Calibrating altimeter...",
+    "Finding the runway...",
+    "Tying down loose bolts...",
+    "Checking fuel levels...",
+    "Inflating tires...",
+    "Installing snacks...",
+    "Teaching birds to fly away...",
+    "Warming up the engine...",
+    " untangling flight paths...",
+    "Coordinating clouds...",
+    "Measuring island heights...",
+    "Testing gravity...",
+    "Counting palm trees...",
+    "Smoothing ocean waves...",
+    "Loading the loading screen..."
+];
+let currentMessageIndex = 0;
+
+// Current color indices
+let mainColorIndex = 0;
+let highlightColorIndex = 0;
+let lastConfiguredMainColor;
+let lastConfiguredHighlightColor;
+
+function updateColorDisplay() {
+    const mainDisplay = document.getElementById('main-color-display');
+    const highlightDisplay = document.getElementById('highlight-color-display');
+    
+    if (mainDisplay) {
+        mainDisplay.style.backgroundColor = lastConfiguredMainColor || mainColors[mainColorIndex];
+    }
+    
+    if (highlightDisplay) {
+        highlightDisplay.style.backgroundColor = lastConfiguredHighlightColor || highlightColors[highlightColorIndex];
+    }
+    
+    // Update aircraft colors if aircraft exists
+    if (typeof aircraft !== 'undefined' && aircraft && typeof aircraft.setColors === 'function') {
+        aircraft.setColors({
+            main: lastConfiguredMainColor || mainColors[mainColorIndex],
+            highlight: lastConfiguredHighlightColor || highlightColors[highlightColorIndex]
+        });
+    }
+}
+
+function setRandomColors() {
+    mainColorIndex = Math.floor(Math.random() * mainColors.length);
+    
+    let newHighlightIndex = Math.floor(Math.random() * highlightColors.length);
+    while (highlightColors[newHighlightIndex] === mainColors[mainColorIndex] && highlightColors.length > 1) {
+        newHighlightIndex = Math.floor(Math.random() * highlightColors.length);
+    }
+    highlightColorIndex = newHighlightIndex;
+    
+    lastConfiguredMainColor = mainColors[mainColorIndex];
+    lastConfiguredHighlightColor = highlightColors[highlightColorIndex];
+    
+    updateColorDisplay();
+}
+
+function setRandomName() {
+    const nameInput = document.getElementById('plane-name');
+    if (nameInput) {
+        const randomName = planeNames[Math.floor(Math.random() * planeNames.length)];
+        nameInput.value = randomName;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const randomNameBtn = document.getElementById('random-name-btn');
+    const randomMainColorBtn = document.getElementById('random-main-color-btn');
+    const randomHighlightBtn = document.getElementById('random-highlight-btn');
+    const mainColorLeft = document.getElementById('main-color-left');
+    const mainColorRight = document.getElementById('main-color-right');
+    const highlightColorLeft = document.getElementById('highlight-color-left');
+    const highlightColorRight = document.getElementById('highlight-color-right');
+    
+    if (randomNameBtn) {
+        randomNameBtn.addEventListener('click', setRandomName);
+    }
+    
+    if (randomMainColorBtn) {
+        randomMainColorBtn.addEventListener('click', function() {
+            mainColorIndex = Math.floor(Math.random() * mainColors.length);
+            lastConfiguredMainColor = mainColors[mainColorIndex];
+            updateColorDisplay();
+        });
+    }
+    
+    if (randomHighlightBtn) {
+        randomHighlightBtn.addEventListener('click', function() {
+            let newHighlightIndex = Math.floor(Math.random() * highlightColors.length);
+            while (highlightColors[newHighlightIndex] === mainColors[mainColorIndex] && highlightColors.length > 1) {
+                newHighlightIndex = Math.floor(Math.random() * highlightColors.length);
+            }
+            highlightColorIndex = newHighlightIndex;
+            lastConfiguredHighlightColor = highlightColors[highlightColorIndex];
+            updateColorDisplay();
+        });
+    }
+    
+    if (mainColorLeft) {
+        mainColorLeft.addEventListener('click', function() {
+            mainColorIndex = (mainColorIndex - 1 + mainColors.length) % mainColors.length;
+            lastConfiguredMainColor = mainColors[mainColorIndex];
+            updateColorDisplay();
+        });
+    }
+    
+    if (mainColorRight) {
+        mainColorRight.addEventListener('click', function() {
+            mainColorIndex = (mainColorIndex + 1) % mainColors.length;
+            lastConfiguredMainColor = mainColors[mainColorIndex];
+            updateColorDisplay();
+        });
+    }
+    
+    if (highlightColorLeft) {
+        highlightColorLeft.addEventListener('click', function() {
+            highlightColorIndex = (highlightColorIndex - 1 + highlightColors.length) % highlightColors.length;
+            lastConfiguredHighlightColor = highlightColors[highlightColorIndex];
+            updateColorDisplay();
+        });
+    }
+    
+    if (highlightColorRight) {
+        highlightColorRight.addEventListener('click', function() {
+            highlightColorIndex = (highlightColorIndex + 1) % highlightColors.length;
+            lastConfiguredHighlightColor = highlightColors[highlightColorIndex];
+            updateColorDisplay();
+        });
+    }
+    
+    // Initialize configured colors to current array values
+    lastConfiguredMainColor = mainColors[mainColorIndex];
+    lastConfiguredHighlightColor = highlightColors[highlightColorIndex];
+    
+    // Set initial values
+    updateColorDisplay();
+    setRandomName();
+    setRandomColors();
+    
+    // Handle orientation change - force repaint of loading screen
+    window.addEventListener('orientationchange', function() {
+        setTimeout(function() {
+            window.dispatchEvent(new Event('resize'));
+        }, 100);
+    });
+    
+    // Also handle resize for browser-based orientation changes
+    window.addEventListener('resize', function() {
+        const loadingEl = document.getElementById('loading');
+        if (loadingEl && loadingEl.style.display !== 'none' && !loadingEl.classList.contains('hidden')) {
+            // Trigger reflow to fix any layout issues
+            const display = loadingEl.style.display;
+            loadingEl.style.display = 'none';
+            void loadingEl.offsetHeight; // Force reflow
+            loadingEl.style.display = display || 'flex';
+        }
+    });
+    
+    // Menu buttons - show loading screen to change name/colors
+    const desktopMenuBtn = document.getElementById('desktop-menu-btn');
+    const desktopResetBtn = document.getElementById('desktop-reset-btn');
+    const menuBtn = document.getElementById('menu-btn');
+    const settingsBtnTouch = document.getElementById('settings-btn-touch');
+    const resetBtnTouch = document.getElementById('reset-btn-touch');
+    
+    function handleMenuClick() {
+        showLoading();
+    }
+    
+    if (desktopMenuBtn) {
+        desktopMenuBtn.addEventListener('click', handleMenuClick);
+    }
+    if (desktopResetBtn) {
+        desktopResetBtn.addEventListener('click', () => {
+            if (aircraft) aircraft.reset();
+            if (orbitCamera) orbitCamera.resetBehindTarget();
+        });
+    }
+    if (menuBtn) {
+        menuBtn.addEventListener('click', handleMenuClick);
+    }
+    if (resetBtnTouch) {
+        resetBtnTouch.addEventListener('click', () => {
+            if (window.aircraft) window.aircraft.reset();
+            if (window.orbitCamera) window.orbitCamera.resetBehindTarget();
+        });
+    }
+    if (settingsBtnTouch) {
+        settingsBtnTouch.addEventListener('click', function() {
+            const settingsModal = document.getElementById('settings-modal');
+            if (settingsModal.style.display === 'flex') {
+                settingsModal.style.display = 'none';
+            } else {
+                // Sync sliders and open
+                const fm = window.floraManager;
+                const bm = window.buildingManager;
+                const fm2 = window.faunaManager;
+                const cs = window.cloudSystem;
+                
+                const vegDistSlider = document.getElementById('veg-distance-slider');
+                const vegDistValue = document.getElementById('veg-distance-value');
+                const vegDensitySlider = document.getElementById('veg-density-slider');
+                const vegDensityValue = document.getElementById('veg-density-value');
+                const bldDistSlider = document.getElementById('building-distance-slider');
+                const bldDistValue = document.getElementById('building-distance-value');
+                const bldDensitySlider = document.getElementById('building-density-slider');
+                const bldDensityValue = document.getElementById('building-density-value');
+                const faunaDistSlider = document.getElementById('fauna-distance-slider');
+                const faunaDistValue = document.getElementById('fauna-distance-value');
+                const faunaDensitySlider = document.getElementById('fauna-density-slider');
+                const faunaDensityValue = document.getElementById('fauna-density-value');
+                const cloudCountSlider = document.getElementById('cloud-count-slider');
+                const cloudCountValue = document.getElementById('cloud-count-value');
+                
+                if (fm) {
+                    vegDistSlider.value = fm.treeMaxDist;
+                    vegDistValue.textContent = fm.treeMaxDist + 'm';
+                    vegDensitySlider.value = Math.round(fm.densityMultiplier * 100);
+                    vegDensityValue.textContent = Math.round(fm.densityMultiplier * 100) + '%';
+                }
+                if (bm) {
+                    bldDistSlider.value = bm.buildingMaxDist;
+                    bldDistValue.textContent = bm.buildingMaxDist + 'm';
+                    bldDensitySlider.value = Math.round(bm.densityMultiplier * 100);
+                    bldDensityValue.textContent = Math.round(bm.densityMultiplier * 100) + '%';
+                }
+                if (fm2) {
+                    faunaDistSlider.value = fm2.animalMaxDist;
+                    faunaDistValue.textContent = fm2.animalMaxDist + 'm';
+                    faunaDensitySlider.value = Math.round(fm2.densityMultiplier * 100);
+                    const totalAnimals = Object.values(fm2.spawnedCount).reduce((a, b) => a + b, 0);
+                    faunaDensityValue.textContent = Math.round(fm2.densityMultiplier * 100) + '% (' + totalAnimals + ')';
+                }
+                if (cs) {
+                    cloudCountSlider.value = cs.clouds.length;
+                    cloudCountValue.textContent = cs.clouds.length;
+                    
+                    const cloudDistSlider = document.getElementById('cloud-distance-slider');
+                    const cloudDistValue = document.getElementById('cloud-distance-value');
+                    if (cloudDistSlider && cloudDistValue) {
+                        cloudDistSlider.value = cs.maxDrawDist || 15000;
+                        cloudDistValue.textContent = (cs.maxDrawDist || 15000) + 'm';
+                    }
+                }
+                
+                settingsModal.style.display = 'flex';
+            }
+        });
+    }
+    
+    // Color picker modal functionality - simple RGB picker
+    const colorPickerModal = document.getElementById('color-picker-modal');
+    
+    const redSlider = document.getElementById('red-slider');
+    const greenSlider = document.getElementById('green-slider');
+    const blueSlider = document.getElementById('blue-slider');
+    const redValue = document.getElementById('red-value');
+    const greenValue = document.getElementById('green-value');
+    const blueValue = document.getElementById('blue-value');
+    const colorPickerPreview = document.getElementById('color-picker-preview');
+    
+    let currentColorSelector = null;
+    let editingMainColor = false;
+    
+    function rgbToHex(r, g, b) {
+        return '#' + [r, g, b].map(x => {
+            const hex = x.toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        }).join('').toUpperCase();
+    }
+    
+    function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+    
+    function updateColorPickerPreview() {
+        const r = parseInt(redSlider.value);
+        const g = parseInt(greenSlider.value);
+        const b = parseInt(blueSlider.value);
+        
+        redValue.textContent = r;
+        greenValue.textContent = g;
+        blueValue.textContent = b;
+        
+        const hex = rgbToHex(r, g, b);
+        colorPickerPreview.style.backgroundColor = hex;
+    }
+    
+    function updateColorFromSliders() {
+        const r = parseInt(redSlider.value);
+        const g = parseInt(greenSlider.value);
+        const b = parseInt(blueSlider.value);
+        
+        redValue.textContent = r;
+        greenValue.textContent = g;
+        blueValue.textContent = b;
+        
+        const hex = rgbToHex(r, g, b);
+        colorPickerPreview.style.backgroundColor = hex;
+    }
+    
+    // Make function globally accessible for clicking on color displays
+    window.openColorPicker = function(element, selectorId) {
+        currentColorSelector = element;
+        editingMainColor = (selectorId === 'main-color-display');
+        
+        let initialColor;
+        if (selectorId === 'main-color-display') {
+            const colorToUse = lastConfiguredMainColor || mainColors[mainColorIndex];
+            initialColor = hexToRgb(colorToUse) || { r: 79, g: 195, b: 247 };
+        } else if (selectorId === 'highlight-color-display') {
+            const colorToUse = lastConfiguredHighlightColor || highlightColors[highlightColorIndex];
+            initialColor = hexToRgb(colorToUse) || { r: 79, g: 195, b: 247 };
+        }
+        
+        redSlider.value = initialColor.r;
+        greenSlider.value = initialColor.g;
+        blueSlider.value = initialColor.b;
+        
+        updateColorFromSliders();
+        
+        const modal = document.getElementById('color-picker-modal');
+        modal.style.display = 'flex';
+        
+        redSlider.focus();
+    };
+    
+    // RGB sliders - update display and apply immediately on input
+    redSlider.addEventListener('input', function() {
+        updateColorFromSliders();
+        
+        if (editingMainColor) {
+            const r = parseInt(redSlider.value);
+            const g = parseInt(greenSlider.value);
+            const b = parseInt(blueSlider.value);
+            const hex = rgbToHex(r, g, b);
+            
+            lastConfiguredMainColor = hex;
+            
+            if (typeof aircraft !== 'undefined' && aircraft && typeof aircraft.setColors === 'function') {
+                aircraft.setColors({
+                    main: hex,
+                    highlight: lastConfiguredHighlightColor
+                });
+            }
+            
+            const mainDisplay = document.getElementById('main-color-display');
+            if (mainDisplay) {
+                mainDisplay.style.backgroundColor = hex;
+            }
+        } else {
+            const r = parseInt(redSlider.value);
+            const g = parseInt(greenSlider.value);
+            const b = parseInt(blueSlider.value);
+            const hex = rgbToHex(r, g, b);
+            
+            lastConfiguredHighlightColor = hex;
+            
+            if (typeof aircraft !== 'undefined' && aircraft && typeof aircraft.setColors === 'function') {
+                aircraft.setColors({
+                    main: lastConfiguredMainColor,
+                    highlight: hex
+                });
+            }
+            
+            const highlightDisplay = document.getElementById('highlight-color-display');
+            if (highlightDisplay) {
+                highlightDisplay.style.backgroundColor = hex;
+            }
+        }
+    });
+    
+    greenSlider.addEventListener('input', function() {
+        updateColorFromSliders();
+        
+        if (editingMainColor) {
+            const r = parseInt(redSlider.value);
+            const g = parseInt(greenSlider.value);
+            const b = parseInt(blueSlider.value);
+            const hex = rgbToHex(r, g, b);
+            
+            lastConfiguredMainColor = hex;
+            
+            if (typeof aircraft !== 'undefined' && aircraft && typeof aircraft.setColors === 'function') {
+                aircraft.setColors({
+                    main: hex,
+                    highlight: lastConfiguredHighlightColor
+                });
+            }
+            
+            const mainDisplay = document.getElementById('main-color-display');
+            if (mainDisplay) {
+                mainDisplay.style.backgroundColor = hex;
+            }
+        } else {
+            const r = parseInt(redSlider.value);
+            const g = parseInt(greenSlider.value);
+            const b = parseInt(blueSlider.value);
+            const hex = rgbToHex(r, g, b);
+            
+            lastConfiguredHighlightColor = hex;
+            
+            if (typeof aircraft !== 'undefined' && aircraft && typeof aircraft.setColors === 'function') {
+                aircraft.setColors({
+                    main: lastConfiguredMainColor,
+                    highlight: hex
+                });
+            }
+            
+            const highlightDisplay = document.getElementById('highlight-color-display');
+            if (highlightDisplay) {
+                highlightDisplay.style.backgroundColor = hex;
+            }
+        }
+    });
+    
+    blueSlider.addEventListener('input', function() {
+        updateColorFromSliders();
+        
+        if (editingMainColor) {
+            const r = parseInt(redSlider.value);
+            const g = parseInt(greenSlider.value);
+            const b = parseInt(blueSlider.value);
+            const hex = rgbToHex(r, g, b);
+            
+            lastConfiguredMainColor = hex;
+            
+            if (typeof aircraft !== 'undefined' && aircraft && typeof aircraft.setColors === 'function') {
+                aircraft.setColors({
+                    main: hex,
+                    highlight: lastConfiguredHighlightColor
+                });
+            }
+            
+            const mainDisplay = document.getElementById('main-color-display');
+            if (mainDisplay) {
+                mainDisplay.style.backgroundColor = hex;
+            }
+        } else {
+            const r = parseInt(redSlider.value);
+            const g = parseInt(greenSlider.value);
+            const b = parseInt(blueSlider.value);
+            const hex = rgbToHex(r, g, b);
+            
+            lastConfiguredHighlightColor = hex;
+            
+            if (typeof aircraft !== 'undefined' && aircraft && typeof aircraft.setColors === 'function') {
+                aircraft.setColors({
+                    main: lastConfiguredMainColor,
+                    highlight: hex
+                });
+            }
+            
+            const highlightDisplay = document.getElementById('highlight-color-display');
+            if (highlightDisplay) {
+                highlightDisplay.style.backgroundColor = hex;
+            }
+        }
+    });
+    
+    // Close modal when clicking outside or on the background
+    colorPickerModal.addEventListener('click', function(e) {
+        if (e.target === colorPickerModal) {
+            colorPickerModal.style.display = 'none';
+            currentColorSelector = null;
+        }
+    });
+    
+    // Ok button closes the modal
+    const colorPickerOk = document.getElementById('color-picker-ok');
+    if (colorPickerOk) {
+        colorPickerOk.addEventListener('click', function() {
+            colorPickerModal.style.display = 'none';
+            currentColorSelector = null;
+        });
+    }
+    
+    // Add click handlers to color displays to open picker
+    const mainColorDisplay = document.getElementById('main-color-display');
+    const highlightColorDisplay = document.getElementById('highlight-color-display');
+    
+    if (mainColorDisplay) {
+        mainColorDisplay.addEventListener('click', function(e) {
+            e.stopPropagation();
+            window.openColorPicker(this, 'main-color-display');
+        });
+    }
+    
+    if (highlightColorDisplay) {
+        highlightColorDisplay.addEventListener('click', function(e) {
+            e.stopPropagation();
+            window.openColorPicker(this, 'highlight-color-display');
+        });
+    }
+    
+    // ========== SETTINGS MODAL ==========
+    const settingsModal = document.getElementById('settings-modal');
+    const settingsBtn = document.getElementById('desktop-settings-btn');
+    const settingsCloseBtn = document.getElementById('settings-close-btn');
+    
+    const presetSelect = document.getElementById('preset-select');
+    
+    const vegDistSlider = document.getElementById('veg-distance-slider');
+    const vegDistValue = document.getElementById('veg-distance-value');
+    const vegDensitySlider = document.getElementById('veg-density-slider');
+    const vegDensityValue = document.getElementById('veg-density-value');
+    
+    const bldDistSlider = document.getElementById('building-distance-slider');
+    const bldDistValue = document.getElementById('building-distance-value');
+    const bldDensitySlider = document.getElementById('building-density-slider');
+    const bldDensityValue = document.getElementById('building-density-value');
+    
+    const faunaDistSlider = document.getElementById('fauna-distance-slider');
+    const faunaDistValue = document.getElementById('fauna-distance-value');
+    const faunaDensitySlider = document.getElementById('fauna-density-slider');
+    const faunaDensityValue = document.getElementById('fauna-density-value');
+    
+    const cloudCountSlider = document.getElementById('cloud-count-slider');
+    const cloudCountValue = document.getElementById('cloud-count-value');
+    
+    const vegSection = document.getElementById('veg-section');
+    const vegToggle = document.getElementById('veg-toggle');
+    const buildingSection = document.getElementById('building-section');
+    const buildingToggle = document.getElementById('building-toggle');
+    const faunaSection = document.getElementById('fauna-section');
+    const faunaToggle = document.getElementById('fauna-toggle');
+    const cloudSection = document.getElementById('cloud-section');
+    const cloudToggle = document.getElementById('cloud-toggle');
+    const boatsSection = document.getElementById('boats-section');
+    const boatsToggle = document.getElementById('boats-toggle');
+    const abbyModeSection = document.getElementById('abby-mode-section');
+    const abbyModeToggle = document.getElementById('abby-mode-toggle');
+    const labelsSection = document.getElementById('labels-section');
+    const cruiseShipLabelsToggle = document.getElementById('cruise-ship-labels-toggle');
+    const boatsDistSlider = document.getElementById('boats-distance-slider');
+    const boatsDistValue = document.getElementById('boats-distance-value');
+    const boatsDensitySlider = document.getElementById('boats-density-slider');
+    const boatsDensityValue = document.getElementById('boats-density-value');
+    
+    function syncSectionState(section, toggle, manager, managerEnabledProp) {
+        if (manager) {
+            const enabled = manager[managerEnabledProp];
+            toggle.checked = enabled;
+            section.classList.toggle('disabled', !enabled);
+        }
+    }
+    
+    function syncSlidersFromManagers() {
+        const fm = window.floraManager;
+        const bm = window.buildingManager;
+        const fm2 = window.faunaManager;
+        const cs = window.cloudSystem;
+        
+        syncSectionState(vegSection, vegToggle, fm, 'enabled');
+        syncSectionState(buildingSection, buildingToggle, bm, 'enabled');
+        syncSectionState(faunaSection, faunaToggle, fm2, 'enabled');
+        syncSectionState(cloudSection, cloudToggle, cs, 'enabled');
+        syncSectionState(boatsSection, boatsToggle, window.boatManager, 'enabled');
+        syncSectionState(balloonsSection, balloonsToggle, window.balloonSystem, 'enabled');
+        
+        if (fm) {
+            vegDistSlider.value = fm.treeMaxDist;
+            vegDistValue.textContent = fm.treeMaxDist + 'm';
+            vegDensitySlider.value = Math.round(fm.densityMultiplier * 100);
+            vegDensityValue.textContent = Math.round(fm.densityMultiplier * 100) + '%';
+        }
+        
+        if (bm) {
+            bldDistSlider.value = bm.buildingMaxDist;
+            bldDistValue.textContent = bm.buildingMaxDist + 'm';
+            bldDensitySlider.value = Math.round(bm.densityMultiplier * 100);
+            bldDensityValue.textContent = Math.round(bm.densityMultiplier * 100) + '%';
+        }
+        
+        if (fm2) {
+            faunaDistSlider.value = fm2.animalMaxDist;
+            faunaDistValue.textContent = fm2.animalMaxDist + 'm';
+            faunaDensitySlider.value = Math.round(fm2.densityMultiplier * 100);
+            const totalAnimals = Object.values(fm2.spawnedCount).reduce((a, b) => a + b, 0);
+            faunaDensityValue.textContent = Math.round(fm2.densityMultiplier * 100) + '% (' + totalAnimals + ')';
+        }
+        
+        if (cs) {
+            cloudCountSlider.value = cs.clouds.length;
+            cloudCountValue.textContent = cs.clouds.length;
+            
+            // Sync cloud distance slider with system value
+            const cloudDistSlider = document.getElementById('cloud-distance-slider');
+            const cloudDistValue = document.getElementById('cloud-distance-value');
+            if (cloudDistSlider && cloudDistValue) {
+                cloudDistSlider.value = cs.maxDrawDist || 15000;
+                cloudDistValue.textContent = (cs.maxDrawDist || 15000) + 'm';
+            }
+        }
+        
+        const boatMgr = window.boatManager;
+        if (boatMgr) {
+            boatsDistSlider.value = boatMgr.boatMaxDist;
+            boatsDistValue.textContent = boatMgr.boatMaxDist + 'm';
+            boatsDensitySlider.value = Math.round(boatMgr.densityMultiplier * 100);
+            const totalBoats = boatMgr.sailboats.length + boatMgr.speedboats.length + boatMgr.pirateShips.length + boatMgr.cruiseShips.length;
+            const visibleCount = Math.floor(totalBoats * boatMgr.densityMultiplier);
+            boatsDensityValue.textContent = Math.round(boatMgr.densityMultiplier * 100) + '% (' + visibleCount + ')';
+        }
+        
+        const balloonSys = window.balloonSystem;
+        if (balloonSys) {
+            balloonsDistSlider.value = balloonSys.maxDrawDist;
+            balloonsDistValue.textContent = balloonSys.maxDrawDist + 'm';
+            balloonsDensitySlider.value = Math.round(balloonSys.densityMultiplier * 100);
+            balloonsDensityValue.textContent = Math.round(balloonSys.densityMultiplier * 100) + '%';
+        }
+    }
+    
+    function openSettings() {
+        syncSlidersFromManagers();
+        
+        // If no preset has been selected yet, use device default and apply it
+        if (!presetSelect.dataset.initialized) {
+            const defaultPreset = getDeviceDefaultPreset();
+            presetSelect.value = defaultPreset;
+            applyPreset(defaultPreset);
+            presetSelect.dataset.initialized = 'true';
+        }
+        
+        settingsModal.style.display = 'flex';
+    }
+    
+    function closeSettings() {
+        settingsModal.style.display = 'none';
+    }
+    
+    if (settingsBtn) {
+        settingsBtn.addEventListener('click', openSettings);
+    }
+    
+    if (settingsCloseBtn) {
+        settingsCloseBtn.addEventListener('click', closeSettings);
+    }
+    
+    settingsModal.addEventListener('click', function(e) {
+        if (e.target === settingsModal) {
+            closeSettings();
+        }
+    });
+    
+    // Vegetation draw distance
+    vegDistSlider.addEventListener('input', function() {
+        const val = parseInt(this.value);
+        vegDistValue.textContent = val + 'm';
+        if (window.floraManager) {
+            window.floraManager.treeMaxDist = val;
+        }
+    });
+    
+    // Vegetation density
+    vegDensitySlider.addEventListener('input', function() {
+        const val = parseInt(this.value);
+        vegDensityValue.textContent = val + '%';
+        if (window.floraManager) {
+            window.floraManager.densityMultiplier = val / 100;
+        }
+    });
+    
+    // Building draw distance
+    bldDistSlider.addEventListener('input', function() {
+        const val = parseInt(this.value);
+        bldDistValue.textContent = val + 'm';
+        if (window.buildingManager) {
+            window.buildingManager.buildingMaxDist = val;
+        }
+    });
+    
+    // Building density
+    bldDensitySlider.addEventListener('input', function() {
+        const val = parseInt(this.value);
+        bldDensityValue.textContent = val + '%';
+        if (window.buildingManager) {
+            window.buildingManager.densityMultiplier = val / 100;
+        }
+    });
+    
+    // Fauna draw distance
+    faunaDistSlider.addEventListener('input', function() {
+        const val = parseInt(this.value);
+        faunaDistValue.textContent = val + 'm';
+        if (window.faunaManager) {
+            window.faunaManager.animalMaxDist = val;
+        }
+    });
+    
+    // Fauna density
+    faunaDensitySlider.addEventListener('input', function() {
+        const val = parseInt(this.value);
+        faunaDensityValue.textContent = val + '%';
+        if (window.faunaManager) {
+            window.faunaManager.densityMultiplier = val / 100;
+        }
+    });
+    
+    // Cloud count - rebuild clouds
+    cloudCountSlider.addEventListener('input', function() {
+        const val = parseInt(this.value);
+        cloudCountValue.textContent = val;
+    });
+    
+    cloudCountSlider.addEventListener('change', function() {
+        const val = parseInt(this.value);
+        if (window.cloudSystem && val !== window.cloudSystem.clouds.length) {
+            window.cloudSystem.rebuild(val);
+        }
+    });
+    
+    // Cloud draw distance
+    const cloudDistSlider = document.getElementById('cloud-distance-slider');
+    const cloudDistValue = document.getElementById('cloud-distance-value');
+    
+    if (cloudDistSlider && cloudDistValue) {
+        cloudDistSlider.addEventListener('input', function() {
+            const val = parseInt(this.value);
+            cloudDistValue.textContent = val + 'm';
+            if (window.cloudSystem) {
+                window.cloudSystem.maxDrawDist = val;
+            }
+        });
+    }
+    
+    // Vegetation toggle
+    vegToggle.addEventListener('change', function() {
+        const enabled = this.checked;
+        vegSection.classList.toggle('disabled', !enabled);
+        if (window.floraManager) {
+            window.floraManager.enabled = enabled;
+        }
+    });
+    
+    // Building toggle
+    buildingToggle.addEventListener('change', function() {
+        const enabled = this.checked;
+        buildingSection.classList.toggle('disabled', !enabled);
+        if (window.buildingManager) {
+            window.buildingManager.enabled = enabled;
+        }
+    });
+    
+    // Fauna toggle
+    faunaToggle.addEventListener('change', function() {
+        const enabled = this.checked;
+        faunaSection.classList.toggle('disabled', !enabled);
+        if (window.faunaManager) {
+            window.faunaManager.enabled = enabled;
+        }
+    });
+    
+    // Cloud toggle
+    cloudToggle.addEventListener('change', function() {
+        const enabled = this.checked;
+        cloudSection.classList.toggle('disabled', !enabled);
+        if (window.cloudSystem) {
+            window.cloudSystem.enabled = enabled;
+        }
+    });
+    
+    // Boats draw distance
+    boatsDistSlider.addEventListener('input', function() {
+        const val = parseInt(this.value);
+        boatsDistValue.textContent = val + 'm';
+        if (window.boatManager) {
+            window.boatManager.boatMaxDist = val;
+        }
+    });
+    
+    // Balloons toggle
+    const balloonsToggle = document.getElementById('balloons-toggle');
+    const balloonsSection = document.getElementById('balloons-section');
+    balloonsToggle.addEventListener('change', function() {
+        const enabled = this.checked;
+        balloonsSection.classList.toggle('disabled', !enabled);
+        if (window.balloonSystem) {
+            window.balloonSystem.enabled = enabled;
+        }
+    });
+    
+    // Balloons draw distance
+    const balloonsDistSlider = document.getElementById('balloons-distance-slider');
+    const balloonsDistValue = document.getElementById('balloons-distance-value');
+    balloonsDistSlider.addEventListener('input', function() {
+        const val = parseInt(this.value);
+        balloonsDistValue.textContent = val + 'm';
+        if (window.balloonSystem) {
+            window.balloonSystem.maxDrawDist = val;
+        }
+    });
+    
+    // Balloons density
+    const balloonsDensitySlider = document.getElementById('balloons-density-slider');
+    const balloonsDensityValue = document.getElementById('balloons-density-value');
+    balloonsDensitySlider.addEventListener('input', function() {
+        const val = parseInt(this.value);
+        balloonsDensityValue.textContent = val + '%';
+        if (window.balloonSystem) {
+            window.balloonSystem.densityMultiplier = val / 100;
+        }
+    });
+    
+    // Boats density
+    boatsDensitySlider.addEventListener('input', function() {
+        const val = parseInt(this.value);
+        boatsDensityValue.textContent = val + '%';
+        if (window.boatManager) {
+            window.boatManager.densityMultiplier = val / 100;
+        }
+    });
+    
+    // Boats toggle
+    boatsToggle.addEventListener('change', function() {
+        const enabled = this.checked;
+        boatsSection.classList.toggle('disabled', !enabled);
+        if (window.boatManager) {
+            window.boatManager.enabled = enabled;
+        }
+    });
+    
+    // Abby Mode toggle
+    abbyModeToggle.addEventListener('change', function() {
+        const enabled = this.checked;
+        abbyModeSection.classList.toggle('disabled', !enabled);
+        if (window.aircraft) {
+            window.aircraft.abbyMode = enabled;
+        }
+    });
+
+    // Cruise ship labels toggle
+    cruiseShipLabelsToggle.addEventListener('change', function() {
+        window.showCruiseShipMarkers = this.checked;
+        updateCruiseShipMarkerVisibility(this.checked);
+    });
+
+    // Preset selector
+    if (presetSelect) {
+        presetSelect.addEventListener('change', function() {
+            applyPreset(this.value);
+        });
+    }
+    
+    function updateCruiseShipMarkerVisibility(show) {
+        const allMarkers = document.querySelectorAll('[id^="cruise-ship-marker"]');
+        allMarkers.forEach(marker => {
+            marker.style.display = show ? 'flex' : 'none';
+        });
+    }
+    
+    // ========== WIREFRAME RENDER MODE ==========
+    const wireframeSelect = document.getElementById('wireframe-select');
+    const wireframeSection = document.getElementById('wireframe-section');
+    var wireframeOverlayGroup = null;
+    
+    function applyWireframeMode(mode) {
+        var isWireframeOnly = mode === 'wireframe';
+        var isOverlay = mode === 'overlay';
+        
+        function setWireframe(obj, enabled) {
+            if (obj && obj.traverse) {
+                obj.traverse(function(child) {
+                    if (child.isMesh && child.material) {
+                        if (Array.isArray(child.material)) {
+                            child.material.forEach(function(mat) {
+                                mat.wireframe = enabled;
+                            });
+                        } else {
+                            child.material.wireframe = enabled;
+                        }
+                    }
+                });
+            }
+        }
+        
+        function removeOverlays() {
+            if (wireframeOverlayGroup) {
+                if (wireframeOverlayGroup.parent) {
+                    wireframeOverlayGroup.parent.remove(wireframeOverlayGroup);
+                }
+                wireframeOverlayGroup.traverse(function(c) {
+                    if (c.geometry) c.geometry.dispose();
+                    if (c.material) c.material.dispose();
+                });
+            }
+            wireframeOverlayGroup = null;
+        }
+        
+        function addOverlayWireframes(obj) {
+            if (!obj || !obj.traverse) return;
+            if (!wireframeOverlayGroup) {
+                wireframeOverlayGroup = new THREE.Group();
+                wireframeOverlayGroup.name = 'wireframe-overlays';
+                wireframeOverlayGroup.renderOrder = 999;
+                if (typeof scene !== 'undefined' && scene) {
+                    scene.add(wireframeOverlayGroup);
+                }
+            }
+            
+            obj.traverse(function(child) {
+                if (!child.isMesh || !child.geometry) return;
+                var overlayMat = new THREE.MeshBasicMaterial({
+                    color: 0xbf40ff,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.6,
+                    depthTest: true,
+                    depthWrite: false
+                });
+                var overlayMesh = new THREE.Mesh(child.geometry, overlayMat);
+                overlayMesh.renderOrder = 999;
+                child.updateWorldMatrix(true, false);
+                overlayMesh.matrix.copy(child.matrixWorld);
+                overlayMesh.matrixAutoUpdate = false;
+                wireframeOverlayGroup.add(overlayMesh);
+            });
+        }
+        
+        removeOverlays();
+        
+        // Aircraft
+        if (window.aircraft && window.aircraft.mesh) {
+            setWireframe(window.aircraft.mesh, isWireframeOnly);
+            if (isOverlay) addOverlayWireframes(window.aircraft.mesh);
+        }
+        
+        // Multiplayer aircraft
+        if (window.multiplayer && window.multiplayer.otherPlayers) {
+            window.multiplayer.otherPlayers.forEach(function(mesh) {
+                if (mesh) {
+                    setWireframe(mesh, isWireframeOnly);
+                    if (isOverlay) addOverlayWireframes(mesh);
+                }
+            });
+        }
+        
+        // Island terrain meshes
+        if (window.islandGroups) {
+            window.islandGroups.forEach(function(group) {
+                if (group) {
+                    setWireframe(group, isWireframeOnly);
+                    if (isOverlay) addOverlayWireframes(group);
+                }
+            });
+        }
+        
+        // Ocean
+        if (window.oceanManager && window.oceanManager.rings) {
+            window.oceanManager.rings.forEach(function(ring) {
+                if (ring && ring.mesh) {
+                    setWireframe(ring.mesh, isWireframeOnly);
+                    if (isOverlay) addOverlayWireframes(ring.mesh);
+                }
+            });
+        }
+        if (window.oceanManager && window.oceanManager.oceanFloorTiles) {
+            window.oceanManager.oceanFloorTiles.forEach(function(tile) {
+                if (tile) {
+                    setWireframe(tile, isWireframeOnly);
+                    if (isOverlay) addOverlayWireframes(tile);
+                }
+            });
+        }
+        
+        // Clouds
+        if (window.cloudSystem && window.cloudSystem.clouds) {
+            window.cloudSystem.clouds.forEach(function(cloud) {
+                if (cloud) {
+                    setWireframe(cloud, isWireframeOnly);
+                    if (isOverlay) addOverlayWireframes(cloud);
+                }
+            });
+        }
+        
+        // Buildings
+        if (window.buildingManager && window.buildingManager.allBuildings) {
+            window.buildingManager.allBuildings.forEach(function(b) {
+                if (b && b.mesh) {
+                    setWireframe(b.mesh, isWireframeOnly);
+                    if (isOverlay) addOverlayWireframes(b.mesh);
+                }
+            });
+        }
+        
+        // Flora
+        if (window.floraManager && window.floraManager.allTrees) {
+            window.floraManager.allTrees.forEach(function(tree) {
+                if (tree && tree.mesh) {
+                    setWireframe(tree.mesh, isWireframeOnly);
+                    if (isOverlay) addOverlayWireframes(tree.mesh);
+                }
+            });
+        }
+        
+        // Fauna
+        if (window.faunaManager && window.faunaManager.animals) {
+            window.faunaManager.animals.forEach(function(animal) {
+                if (animal && animal.mesh) {
+                    setWireframe(animal.mesh, isWireframeOnly);
+                    if (isOverlay) addOverlayWireframes(animal.mesh);
+                }
+            });
+        }
+        
+        // Boats
+        if (window.boatManager) {
+            var boatArrays = [
+                window.boatManager.sailboats,
+                window.boatManager.speedboats,
+                window.boatManager.pirateShips,
+                window.boatManager.cruiseShips
+            ];
+            boatArrays.forEach(function(arr) {
+                if (arr) {
+                    arr.forEach(function(boat) {
+                        if (boat && boat.mesh) {
+                            setWireframe(boat.mesh, isWireframeOnly);
+                            if (isOverlay) addOverlayWireframes(boat.mesh);
+                        }
+                    });
+                }
+            });
+        }
+        
+        // Hot air balloons
+        if (window.balloonSystem && window.balloonSystem.balloons) {
+            window.balloonSystem.balloons.forEach(function(balloon) {
+                if (balloon && balloon.mesh) {
+                    setWireframe(balloon.mesh, isWireframeOnly);
+                    if (isOverlay) addOverlayWireframes(balloon.mesh);
+                }
+            });
+        }
+    }
+    
+    wireframeSelect.addEventListener('change', function() {
+        applyWireframeMode(this.value);
+    });
+    
+    // C key opens settings
+    window.addEventListener('keydown', function(e) {
+        if (e.code === 'KeyC' && !e.ctrlKey && !e.metaKey) {
+            const activeEl = document.activeElement;
+            const isInputFocused = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+            if (!isInputFocused) {
+                if (settingsModal.style.display === 'flex') {
+                    closeSettings();
+                } else {
+                    openSettings();
+                }
+            }
+        }
+    });
+});
+
+// ========== MAIN =======
+        var scene, camera, renderer, aircraft, orbitCamera, cloudSystem, wildlife, clock;
+        
+        function isMobileLandscape() {
+            const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            const isLandscape = window.innerWidth > window.innerHeight;
+            const isShort = window.innerHeight < 500;
+            return isTouch && (isLandscape || isShort);
+        }
+
+        // Hide logo on mobile landscape
+        if (isMobileLandscape()) {
+            const logo = document.getElementById('loading-logo');
+            if (logo) logo.style.display = 'none';
+        }
+
+        function updateLoading(progress) {
+            const progressEl = document.getElementById('loading-progress');
+            const barFillEl = document.getElementById('loading-bar-fill');
+            const planeEl = document.getElementById('loading-plane');
+            const textEl = document.getElementById('loading-text');
+            
+            if (progressEl) progressEl.textContent = progress + '%';
+            if (barFillEl) barFillEl.style.width = progress + '%';
+            if (planeEl) planeEl.style.left = progress + '%';
+            
+            // Cycle through loading messages based on progress
+            if (textEl) {
+                const messageIndex = Math.floor((progress / 100) * loadingMessages.length);
+                const actualIndex = Math.min(messageIndex, loadingMessages.length - 1);
+                if (actualIndex !== currentMessageIndex || progress === 0) {
+                    currentMessageIndex = actualIndex;
+                    textEl.textContent = loadingMessages[currentMessageIndex];
+                }
+            }
+        }
+        
+        function hideLoading() {
+            const el = document.getElementById('loading');
+            if (el) {
+                el.classList.add('hidden');
+                
+                // Show menu buttons during gameplay
+                const desktopMenuBtn = document.getElementById('desktop-menu-btn');
+                const desktopResetBtn = document.getElementById('desktop-reset-btn');
+                const menuBtn = document.getElementById('menu-btn');
+                const resetBtn = document.getElementById('reset-btn');
+                const controlsHint = document.getElementById('controls-hint');
+                if (desktopMenuBtn) desktopMenuBtn.classList.add('visible');
+                if (desktopResetBtn) desktopResetBtn.classList.add('visible');
+                if (menuBtn) menuBtn.classList.add('visible');
+                if (resetBtn) resetBtn.classList.add('visible');
+                if (controlsHint) controlsHint.classList.add('visible');
+                
+                setTimeout(() => {
+                    el.style.display = 'none';
+                }, 800);
+            }
+        }
+        
+        function showLoading() {
+            const el = document.getElementById('loading');
+            if (el) {
+                el.style.display = 'flex';
+                el.classList.remove('hidden');
+                
+                // Hide menu buttons during loading
+                const desktopMenuBtn = document.getElementById('desktop-menu-btn');
+                const desktopResetBtn = document.getElementById('desktop-reset-btn');
+                const menuBtn = document.getElementById('menu-btn');
+                const resetBtn = document.getElementById('reset-btn');
+                const controlsHint = document.getElementById('controls-hint');
+                if (desktopMenuBtn) desktopMenuBtn.classList.remove('visible');
+                if (desktopResetBtn) desktopResetBtn.classList.remove('visible');
+                if (menuBtn) menuBtn.classList.remove('visible');
+                if (resetBtn) resetBtn.classList.remove('visible');
+                if (controlsHint) controlsHint.classList.remove('visible');
+            }
+        }
+
+        function init() {
+            scene = new THREE.Scene();
+            // Warm afternoon sky
+            scene.background = new THREE.Color(0x87CEEB);
+            // FogExp2 with density tuned for 3km ocean ring - smooth fade at outer edge
+            scene.fog = new THREE.FogExp2(0x87CEEB, 0.00015);
+            
+            // Share scene with multiplayer
+            if (typeof setMultiplayerScene === 'function') {
+                setMultiplayerScene(scene);
+            }
+            
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100000);
+            camera.position.set(0, 150, -600);
+            window.camera = camera; // Make globally accessible for FloraManager
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            document.body.appendChild(renderer.domElement);
+            
+            initControls();
+            
+            clock = new THREE.Clock();
+            
+                // Get the selected colors and create aircraft
+                const selectedMainColor = mainColors[mainColorIndex];
+                const selectedHighlightColor = highlightColors[highlightColorIndex];
+                aircraft = new Aircraft({
+                    main: selectedMainColor,
+                    highlight: selectedHighlightColor
+                });
+                window.aircraft = aircraft;
+            scene.add(aircraft.mesh);
+            
+            orbitCamera = new OrbitCamera(camera, aircraft);
+            
+            // Initialize multiplayer after aircraft is created
+            if (typeof initMultiplayer === 'function') {
+                initMultiplayer(scene);
+            }
+            
+            console.log('Aircraft created with colors:', {
+                main: selectedMainColor,
+                highlight: selectedHighlightColor
+            });
+            
+            // Initialize touch camera controls for mobile
+            initTouchCameraControls(orbitCamera);
+            
+            createSky(scene);
+            
+            // Create dynamic ocean (function is global from environment.js)
+            if (typeof createDynamicOcean === 'function') {
+              createDynamicOcean(scene, camera);
+            }
+            
+            cloudSystem = new CloudSystem(scene);
+            
+            updateLoading(10);
+            createAllIslands(scene, (progress) => {
+                updateLoading(10 + Math.round(progress * 0.8));
+            }).then((islandGroups) => {
+                window.islandGroups = islandGroups;
+                updateLoading(90);
+                
+                // Set aircraft to random start position near an island
+                aircraft.setRandomStartPosition();
+                
+                // Position camera behind aircraft on initial spawn
+                orbitCamera.resetBehindTarget();
+                
+                // Initialize fauna after islands are loaded
+                const faunaManager = new FaunaManager(scene, camera);
+                faunaManager.init();
+                window.faunaManager = faunaManager;
+                
+                // Initialize hot air balloon system
+                const balloonSystem = new HotAirBalloonSystem(scene, camera);
+                window.balloonSystem = balloonSystem;
+                
+                // Initialize performance monitor
+                const perfMonitor = new PerformanceMonitor();
+                window.perfMonitor = perfMonitor;
+                
+                // Initialize gauge system
+                const gaugeSystem = new GaugeSystem();
+                window.gaugeSystem = gaugeSystem;
+                
+                // Initialize boat manager after islands are loaded
+                const boatManager = new BoatManager(scene);
+                window.boatManager = boatManager;
+                
+                updateLoading(90);
+                
+                // Show "Let's Soar!" button while final systems initialize
+                const startButton = document.getElementById('start-button');
+                const loadingBar = document.getElementById('loading-bar');
+                const loadingText = document.getElementById('loading-text');
+                
+                if (startButton && loadingBar && loadingText) {
+                    loadingBar.style.display = 'none';
+                    loadingText.style.display = 'none';
+                    startButton.style.display = 'block';
+                    
+                    startButton.onclick = () => {
+                        hideLoading();
+                    };
+                }
+            });
+            
+            window.addEventListener('resize', onWindowResize);
+
+            animate();
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function hideCrashMessage() {
+            const crashMsg = document.getElementById('crash-message');
+            if (crashMsg) {
+                crashMsg.classList.remove('visible');
+            }
+        }
+
+        function showCrashMessage() {
+            const crashMsg = document.getElementById('crash-message');
+            if (crashMsg) {
+                crashMsg.classList.add('visible');
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+            const time = clock.getElapsedTime();
+            
+            // Update ocean waves (function is global from environment.js)
+            if (typeof updateOcean === 'function') {
+              updateOcean(delta);
+            }
+            
+            const keyboardInput = getKeyboardInput();
+            const touchInputData = getTouchInput();
+            const mouseInput = getMouseInput();
+            
+            // Merge keyboard and touch inputs (touch takes priority if active)
+            const input = {
+                pitchUp: keyboardInput.pitchUp || touchInputData.pitch < -0.1,
+                pitchDown: keyboardInput.pitchDown || touchInputData.pitch > 0.1,
+                rollLeft: keyboardInput.rollLeft || touchInputData.roll < -0.1,
+                rollRight: keyboardInput.rollRight || touchInputData.roll > 0.1,
+                yawLeft: keyboardInput.yawLeft || touchInputData.yaw < -0.1,
+                yawRight: keyboardInput.yawRight || touchInputData.yaw > 0.1,
+                throttleUp: keyboardInput.throttleUp,
+                throttleDown: keyboardInput.throttleDown,
+                brake: keyboardInput.brake,
+                reset: keyboardInput.reset || touchInputData.reset
+            };
+            
+            const settingsOpen = document.getElementById('settings-modal').style.display === 'flex';
+            const loadingVisible = document.getElementById('loading').style.display !== 'none' && !document.getElementById('loading').classList.contains('hidden');
+            if (!settingsOpen && !loadingVisible) {
+                orbitCamera.handleMouseInput(mouseInput.deltaX, mouseInput.deltaY);
+                orbitCamera.handleScroll(mouseInput.scrollDelta);
+            }
+            
+            const controlInput = {
+                pitch: (input.pitchUp ? -1 : 0) + (input.pitchDown ? 1 : 0),
+                roll: (input.rollLeft ? -1 : 0) + (input.rollRight ? 1 : 0),
+                yaw: (input.yawLeft ? -1 : 0) + (input.yawRight ? 1 : 0)
+            };
+            
+            // Check for crash
+            if (aircraft.checkCrash()) {
+                showCrashMessage();
+            }
+            
+            // If crashed, don't allow normal flight controls unless reset
+            const crashMsg = document.getElementById('crash-message');
+            const isCrashed = crashMsg && crashMsg.classList.contains('visible');
+            
+            if (!isCrashed) {
+                aircraft.setControlInput(controlInput);
+                
+                // Handle throttle - mobile uses direct slider value, desktop uses up/down buttons
+                if (isTouchDevice()) {
+                    aircraft.setThrottle(touchInputData.throttle);
+                } else {
+                    aircraft.updateThrottle(input.throttleUp, input.throttleDown, delta);
+                }
+                
+                aircraft.update(delta);
+            }
+            
+            if (window.gaugeSystem) {
+                window.gaugeSystem.updateSpeed(aircraft.ias);
+                window.gaugeSystem.updateAltitude(aircraft.altitude * 3.281);
+                window.gaugeSystem.updateThrottle(aircraft.throttle * 100);
+            }
+
+            const velocityDisplay = document.getElementById('velocity-display');
+            if (velocityDisplay) {
+                const speed = aircraft.velocity.length();
+                const forward = new THREE.Vector3(0, 0, -1);
+                forward.applyEuler(aircraft.rotation);
+                const direction = aircraft.velocity.clone().normalize();
+                const dot = forward.dot(direction);
+                const signedSpeed = dot < 0 ? -speed : speed;
+                const speedKts = signedSpeed * 1.944;
+                velocityDisplay.textContent = `Speed: ${signedSpeed.toFixed(0)} m/s (${speedKts.toFixed(0)} kts)`;
+            }
+
+            if (input.reset) {
+                hideCrashMessage();
+                aircraft.reset();
+                orbitCamera.resetBehindTarget();
+            }
+            
+            orbitCamera.update(delta);
+            cloudSystem.update(delta, time, camera);
+            if (window.boatManager) {
+                window.boatManager.update(delta, time, camera);
+            }
+            
+            // Update flora LOD and culling
+            if (window.floraManager) {
+                window.floraManager.update(delta);
+            }
+            
+            // Update buildings
+            if (window.buildingManager) {
+                window.buildingManager.update(delta);
+            }
+            
+            // Update fauna (animals)
+            if (window.faunaManager) {
+                window.faunaManager.update(delta);
+            }
+            
+            // Update hot air balloons
+            if (window.balloonSystem) {
+                window.balloonSystem.update(delta);
+            }
+            
+            // Update performance monitor
+            if (window.perfMonitor) {
+                window.perfMonitor.update();
+            }
+            
+            // Update multiplayer name labels visibility and distance dots
+            if (typeof updateMultiplayerLabels === 'function' && camera && renderer) {
+                updateMultiplayerLabels(camera, renderer);
+            }
+            
+            // Update multiplayer position interpolation (smooth movement)
+            if (typeof updateMultiplayerInterpolation === 'function') {
+                updateMultiplayerInterpolation(delta);
+            }
+            
+            renderer.render(scene, camera);
+        }
+
+        init();
+    </script>
+</body>
+</html>
