@@ -269,6 +269,75 @@
                 </div>
             </div>
             
+            <div class="settings-section" id="physics-section">
+                <div class="settings-section-header">
+                    <h3 class="settings-section-title">Flight Physics</h3>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="physics-mode-toggle">Realistic Physics</label>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="physics-mode-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="float-plane-toggle">Float Plane (Amphibious)</label>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="float-plane-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="reverse-elevator-toggle">Reverse Elevator</label>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="reverse-elevator-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="settings-section" id="lighting-section">
+                <div class="settings-section-header">
+                    <h3 class="settings-section-title">Lighting</h3>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="light-intensity-slider">Sun Intensity</label>
+                    <div class="slider-container">
+                        <input type="range" id="light-intensity-slider" min="0.1" max="3.0" step="0.1" value="1.5">
+                        <span class="slider-value" id="light-intensity-value">1.5</span>
+                    </div>
+                </div>
+                
+                <div class="setting-row">
+                    <label>Sun Color</label>
+                    <div class="selected-color-display" id="sun-color-display" style="margin-top: 8px;"></div>
+                </div>
+                
+                <div class="setting-row sun-position-row">
+                    <label>Sun Position</label>
+                    <div class="sun-position-widget">
+                        <div class="sun-position-container">
+                            <div class="horizon-circle"></div>
+                            <div class="zenith-marker">Z</div>
+                            <div class="compass-label north">N</div>
+                            <div class="compass-label east">E</div>
+                            <div class="compass-label south">S</div>
+                            <div class="compass-label west">W</div>
+                            <div class="sun-handle" id="sun-handle"></div>
+                        </div>
+                        <div class="sun-position-info">
+                            <div>Elevation: <span id="sun-elevation-value">45°</span></div>
+                            <div>Azimuth: <span id="sun-azimuth-value">135°</span></div>
+                            <div class="sun-time-hint" id="sun-time-hint">Afternoon</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="settings-section" id="abby-mode-section">
                 <div class="settings-section-header">
                     <h3 class="settings-section-title">Abby Mode (No Crash)</h3>
@@ -308,6 +377,185 @@
                     </div>
                 </div>
             </div>
+
+            <div class="settings-section" id="colors-section">
+                <div class="settings-section-header">
+                    <h3 class="settings-section-title">Colors</h3>
+                </div>
+                
+                <div class="setting-row">
+                    <label>Sky</label>
+                    <div class="setting-control">
+                        <div class="color-swatch-picker" id="sky-color-picker">
+                            <div class="color-swatch-btn" id="sky-color-swatch" style="background-color: #87CEEB;"></div>
+                            <span class="color-hex-display" id="sky-color-hex">#87CEEB</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="setting-row">
+                    <label>Cloud</label>
+                    <div class="setting-control">
+                        <div class="color-swatch-picker" id="cloud-color-picker">
+                            <div class="color-swatch-btn" id="cloud-color-swatch" style="background-color: #ffffff;"></div>
+                            <span class="color-hex-display" id="cloud-color-hex">#FFFFFF</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="setting-row">
+                    <label>Ocean</label>
+                    <div class="setting-control">
+                        <div class="color-swatch-picker" id="water-color-picker">
+                            <div class="color-swatch-btn" id="water-color-swatch" style="background-color: #40c4ff;"></div>
+                            <span class="color-hex-display" id="water-color-hex">#40c4ff</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="setting-row">
+                    <label>Ocean Floor</label>
+                    <div class="setting-control">
+                        <div class="color-swatch-picker" id="ocean-floor-color-picker">
+                            <div class="color-swatch-btn" id="ocean-floor-color-swatch" style="background-color: #8B7355;"></div>
+                            <span class="color-hex-display" id="ocean-floor-color-hex">#8B7355</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section-header stars-header">
+                    <h3 class="settings-section-title">Stars</h3>
+                    <label class="settings-toggle">
+                        <input type="checkbox" id="stars-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div id="star-colors-panel" class="star-colors-panel">
+                    <div class="setting-row">
+                        <label>Star 1</label>
+                        <div class="setting-control">
+                            <div class="color-swatch-picker" id="star-color-1-picker">
+                                <div class="color-swatch-btn" id="star-color-1-swatch" style="background-color: #E8F4FF;"></div>
+                                <span class="color-hex-display" id="star-color-1-hex">#E8F4FF</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-row">
+                        <label>Star 2</label>
+                        <div class="setting-control">
+                            <div class="color-swatch-picker" id="star-color-2-picker">
+                                <div class="color-swatch-btn" id="star-color-2-swatch" style="background-color: #FFF8E8;"></div>
+                                <span class="color-hex-display" id="star-color-2-hex">#FFF8E8</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-row">
+                        <label>Star 3</label>
+                        <div class="setting-control">
+                            <div class="color-swatch-picker" id="star-color-3-picker">
+                                <div class="color-swatch-btn" id="star-color-3-swatch" style="background-color: #F0F8FF;"></div>
+                                <span class="color-hex-display" id="star-color-3-hex">#F0F8FF</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-section" id="ocean-section">
+                <div class="settings-section-header">
+                    <h3 class="settings-section-title">Ocean</h3>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="wave-height-slider">Wave Height</label>
+                    <div class="setting-control">
+                        <input type="range" id="wave-height-slider" min="0" max="100" value="50" step="5">
+                        <span id="wave-height-value" class="setting-value">50%</span>
+                    </div>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="wave-intensity-slider">Wave Intensity</label>
+                    <div class="setting-control">
+                        <input type="range" id="wave-intensity-slider" min="0" max="100" value="50" step="5">
+                        <span id="wave-intensity-value" class="setting-value">50%</span>
+                    </div>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="wave-width-slider">Wave Width</label>
+                    <div class="setting-control">
+                        <input type="range" id="wave-width-slider" min="0" max="100" value="50" step="5">
+                        <span id="wave-width-value" class="setting-value">50%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sky/Water Color Picker Modal -->
+    <div id="environment-color-modal" class="modal">
+        <div class="modal-content environment-color-picker-container">
+            <div class="environment-color-header">
+                <span id="environment-color-title">Color</span>
+                <span id="environment-color-hex-display" class="color-hex-display">#000000</span>
+            </div>
+            <div class="environment-color-preview" id="environment-color-preview"></div>
+            <div class="rgb-color-picker">
+                <div class="slider-row">
+                    <label style="color: #ff6b6b;">R</label>
+                    <input type="range" id="env-red-slider" min="0" max="255" value="64">
+                    <span id="env-red-value" style="color: #ff6b6b;">64</span>
+                </div>
+                <div class="slider-row">
+                    <label style="color: #4ecdc4;">G</label>
+                    <input type="range" id="env-green-slider" min="0" max="255" value="196">
+                    <span id="env-green-value" style="color: #4ecdc4;">196</span>
+                </div>
+                <div class="slider-row">
+                    <label style="color: #45b7d1;">B</label>
+                    <input type="range" id="env-blue-slider" min="0" max="255" value="255">
+                    <span id="env-blue-value" style="color: #45b7d1;">255</span>
+                </div>
+            </div>
+            <div class="transparency-row" id="transparency-row" style="display: none;">
+                <label style="color: #9b59b6;">Opacity</label>
+                <input type="range" id="env-opacity-slider" min="0" max="100" value="75">
+                <span id="env-opacity-value" style="color: #9b59b6;">75%</span>
+            </div>
+            <button id="environment-color-ok" class="color-picker-ok-btn">Ok!</button>
+        </div>
+    </div>
+    
+    <!-- Sun Color Picker Modal -->
+    <div id="sun-color-modal" class="modal">
+        <div class="modal-content environment-color-picker-container">
+            <div class="environment-color-header">
+                <span id="sun-color-title">Sun Color</span>
+                <span id="sun-color-hex-display" class="color-hex-display">#FFFFCC</span>
+            </div>
+            <div class="environment-color-preview" id="sun-color-preview"></div>
+            <div class="rgb-color-picker">
+                <div class="slider-row">
+                    <label style="color: #ff6b6b;">R</label>
+                    <input type="range" id="sun-red-slider" min="0" max="255" value="255">
+                    <span id="sun-red-value" style="color: #ff6b6b;">255</span>
+                </div>
+                <div class="slider-row">
+                    <label style="color: #4ecdc4;">G</label>
+                    <input type="range" id="sun-green-slider" min="0" max="255" value="255">
+                    <span id="sun-green-value" style="color: #4ecdc4;">255</span>
+                </div>
+                <div class="slider-row">
+                    <label style="color: #45b7d1;">B</label>
+                    <input type="range" id="sun-blue-slider" min="0" max="255" value="204">
+                    <span id="sun-blue-value" style="color: #45b7d1;">204</span>
+                </div>
+            </div>
+            <button id="sun-color-ok" class="color-picker-ok-btn">Ok!</button>
         </div>
     </div>
     
@@ -459,6 +707,11 @@
         <!-- Core game modules -->
         <script src="js/multiplayer.js"></script>
     <script src="js/controls.js"></script>
+    
+    <!-- Physics classes (must load before aircraft.js) -->
+    <script src="js/physics/arcade-physics.js"></script>
+    <script src="js/physics/realistic-physics.js"></script>
+    
     <script src="js/aircraft.js"></script>
     <script src="js/camera.js"></script>
     <script src="js/ocean.js"></script>
@@ -508,6 +761,7 @@
     <script src="js/animals/honeycreeper.js"></script>
     <script src="js/animals/nene.js"></script>
     <script src="js/fauna-manager.js"></script>
+    <script src="js/music-player.js"></script>
     <script>
 // ========== NAME & COLOR SELECTION ==========
 const planeNames = [
@@ -1061,6 +1315,750 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // ========== ENVIRONMENT COLOR PICKER ==========
+    const envColorModal = document.getElementById('environment-color-modal');
+    const envRedSlider = document.getElementById('env-red-slider');
+    const envGreenSlider = document.getElementById('env-green-slider');
+    const envBlueSlider = document.getElementById('env-blue-slider');
+    const envRedValue = document.getElementById('env-red-value');
+    const envGreenValue = document.getElementById('env-green-value');
+    const envBlueValue = document.getElementById('env-blue-value');
+    const envOpacitySlider = document.getElementById('env-opacity-slider');
+    const envOpacityValue = document.getElementById('env-opacity-value');
+    const envColorPreview = document.getElementById('environment-color-preview');
+    const envColorTitle = document.getElementById('environment-color-title');
+    const envColorHexDisplay = document.getElementById('environment-color-hex-display');
+    const transparencyRow = document.getElementById('transparency-row');
+    const envColorOk = document.getElementById('environment-color-ok');
+    
+    let currentEnvColorType = null; // 'sky', 'water', or 'cloud'
+    
+    const skyColorSwatch = document.getElementById('sky-color-swatch');
+    const skyColorHex = document.getElementById('sky-color-hex');
+    const waterColorSwatch = document.getElementById('water-color-swatch');
+    const waterColorHex = document.getElementById('water-color-hex');
+    const cloudColorSwatch = document.getElementById('cloud-color-swatch');
+    const cloudColorHex = document.getElementById('cloud-color-hex');
+    const oceanFloorColorSwatch = document.getElementById('ocean-floor-color-swatch');
+    const oceanFloorColorHex = document.getElementById('ocean-floor-color-hex');
+    const starColor1Swatch = document.getElementById('star-color-1-swatch');
+    const starColor1Hex = document.getElementById('star-color-1-hex');
+    const starColor2Swatch = document.getElementById('star-color-2-swatch');
+    const starColor2Hex = document.getElementById('star-color-2-hex');
+    const starColor3Swatch = document.getElementById('star-color-3-swatch');
+    const starColor3Hex = document.getElementById('star-color-3-hex');
+    
+    // Load saved colors or use defaults
+    let skyColor = { r: 135, g: 206, b: 235 }; // #87CEEB
+    let waterColor = { r: 64, g: 196, b: 255 }; // #40C4FF
+    let waterOpacity = 0.75;
+    let cloudColor = { r: 255, g: 255, b: 255 }; // #FFFFFF
+    let oceanFloorColor = { r: 139, g: 115, b: 85 }; // #8B7355 (sandy brown)
+    let starColor1 = { r: 232, g: 244, b: 255 }; // #E8F4FF (cool white)
+    let starColor2 = { r: 255, g: 248, b: 232 }; // #FFF8E8 (warm white)
+    let starColor3 = { r: 240, g: 248, b: 255 }; // #F0F8FF (alice blue)
+    
+    function loadEnvironmentColors() {
+        const savedSky = localStorage.getItem('skyColor');
+        if (savedSky) {
+            skyColor = JSON.parse(savedSky);
+        }
+        const savedWater = localStorage.getItem('waterColor');
+        if (savedWater) {
+            waterColor = JSON.parse(savedWater);
+        }
+        const savedOpacity = localStorage.getItem('waterOpacity');
+        if (savedOpacity) {
+            waterOpacity = parseFloat(savedOpacity);
+        }
+        const savedCloud = localStorage.getItem('cloudColor');
+        if (savedCloud) {
+            cloudColor = JSON.parse(savedCloud);
+        }
+        const savedOceanFloor = localStorage.getItem('oceanFloorColor');
+        if (savedOceanFloor) {
+            oceanFloorColor = JSON.parse(savedOceanFloor);
+        }
+        const savedStar1 = localStorage.getItem('starColor1');
+        if (savedStar1) {
+            starColor1 = JSON.parse(savedStar1);
+        }
+        const savedStar2 = localStorage.getItem('starColor2');
+        if (savedStar2) {
+            starColor2 = JSON.parse(savedStar2);
+        }
+        const savedStar3 = localStorage.getItem('starColor3');
+        if (savedStar3) {
+            starColor3 = JSON.parse(savedStar3);
+        }
+        updateColorSwatches();
+    }
+    
+    function saveEnvironmentColors() {
+        localStorage.setItem('skyColor', JSON.stringify(skyColor));
+        localStorage.setItem('waterColor', JSON.stringify(waterColor));
+        localStorage.setItem('waterOpacity', waterOpacity.toString());
+        localStorage.setItem('cloudColor', JSON.stringify(cloudColor));
+        localStorage.setItem('oceanFloorColor', JSON.stringify(oceanFloorColor));
+        localStorage.setItem('starColor1', JSON.stringify(starColor1));
+        localStorage.setItem('starColor2', JSON.stringify(starColor2));
+        localStorage.setItem('starColor3', JSON.stringify(starColor3));
+    }
+    
+    function updateColorSwatches() {
+        const skyHex = rgbToHex(skyColor.r, skyColor.g, skyColor.b);
+        const waterHex = rgbToHex(waterColor.r, waterColor.g, waterColor.b);
+        const cloudHex = rgbToHex(cloudColor.r, cloudColor.g, cloudColor.b);
+        const oceanFloorHex = rgbToHex(oceanFloorColor.r, oceanFloorColor.g, oceanFloorColor.b);
+        const star1Hex = rgbToHex(starColor1.r, starColor1.g, starColor1.b);
+        const star2Hex = rgbToHex(starColor2.r, starColor2.g, starColor2.b);
+        const star3Hex = rgbToHex(starColor3.r, starColor3.g, starColor3.b);
+        skyColorSwatch.style.backgroundColor = skyHex;
+        skyColorHex.textContent = skyHex;
+        waterColorSwatch.style.backgroundColor = waterHex;
+        waterColorHex.textContent = waterHex;
+        cloudColorSwatch.style.backgroundColor = cloudHex;
+        cloudColorHex.textContent = cloudHex;
+        oceanFloorColorSwatch.style.backgroundColor = oceanFloorHex;
+        oceanFloorColorHex.textContent = oceanFloorHex;
+        starColor1Swatch.style.backgroundColor = star1Hex;
+        starColor1Hex.textContent = star1Hex;
+        starColor2Swatch.style.backgroundColor = star2Hex;
+        starColor2Hex.textContent = star2Hex;
+        starColor3Swatch.style.backgroundColor = star3Hex;
+        starColor3Hex.textContent = star3Hex;
+    }
+    
+    function rgbToHex(r, g, b) {
+        return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase();
+    }
+    
+    function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+    
+    function updateEnvColorPreview() {
+        const hex = rgbToHex(
+            parseInt(envRedSlider.value),
+            parseInt(envGreenSlider.value),
+            parseInt(envBlueSlider.value)
+        );
+        envColorPreview.style.backgroundColor = hex;
+        envColorHexDisplay.textContent = hex;
+    }
+    
+    function openEnvColorPicker(type) {
+        currentEnvColorType = type;
+        
+        let color, showOpacity = false;
+        if (type === 'sky') {
+            color = skyColor;
+            envColorTitle.textContent = 'Sky Color';
+            showOpacity = false;
+        } else if (type === 'cloud') {
+            color = cloudColor;
+            envColorTitle.textContent = 'Cloud Color';
+            showOpacity = false;
+        } else if (type === 'oceanFloor') {
+            color = oceanFloorColor;
+            envColorTitle.textContent = 'Ocean Floor Color';
+            showOpacity = false;
+        } else if (type === 'starColor1') {
+            color = starColor1;
+            envColorTitle.textContent = 'Star Color 1';
+            showOpacity = false;
+        } else if (type === 'starColor2') {
+            color = starColor2;
+            envColorTitle.textContent = 'Star Color 2';
+            showOpacity = false;
+        } else if (type === 'starColor3') {
+            color = starColor3;
+            envColorTitle.textContent = 'Star Color 3';
+            showOpacity = false;
+        } else {
+            color = waterColor;
+            envColorTitle.textContent = 'Ocean Color';
+            showOpacity = true;
+        }
+        
+        envRedSlider.value = color.r;
+        envGreenSlider.value = color.g;
+        envBlueSlider.value = color.b;
+        envRedValue.textContent = color.r;
+        envGreenValue.textContent = color.g;
+        envBlueValue.textContent = color.b;
+        
+        if (showOpacity) {
+            transparencyRow.style.display = 'flex';
+            envOpacitySlider.value = waterOpacity * 100;
+            envOpacityValue.textContent = Math.round(waterOpacity * 100) + '%';
+        } else {
+            transparencyRow.style.display = 'none';
+        }
+        
+        updateEnvColorPreview();
+        envColorModal.style.display = 'flex';
+    }
+    
+    function applyEnvironmentColors() {
+        const r = parseInt(envRedSlider.value);
+        const g = parseInt(envGreenSlider.value);
+        const b = parseInt(envBlueSlider.value);
+        
+        if (currentEnvColorType === 'sky') {
+            skyColor.r = r;
+            skyColor.g = g;
+            skyColor.b = b;
+        } else if (currentEnvColorType === 'cloud') {
+            cloudColor.r = r;
+            cloudColor.g = g;
+            cloudColor.b = b;
+        } else if (currentEnvColorType === 'oceanFloor') {
+            oceanFloorColor.r = r;
+            oceanFloorColor.g = g;
+            oceanFloorColor.b = b;
+        } else if (currentEnvColorType === 'starColor1') {
+            starColor1.r = r;
+            starColor1.g = g;
+            starColor1.b = b;
+        } else if (currentEnvColorType === 'starColor2') {
+            starColor2.r = r;
+            starColor2.g = g;
+            starColor2.b = b;
+        } else if (currentEnvColorType === 'starColor3') {
+            starColor3.r = r;
+            starColor3.g = g;
+            starColor3.b = b;
+        } else {
+            waterColor.r = r;
+            waterColor.g = g;
+            waterColor.b = b;
+            waterOpacity = parseInt(envOpacitySlider.value) / 100;
+        }
+        
+        saveEnvironmentColors();
+        updateColorSwatches();
+        applySkyColor();
+        applyWaterColor();
+        applyCloudColor();
+        applyOceanFloorColor();
+        applyStarColors();
+    }
+    
+    function applySkyColor() {
+        const hex = rgbToHex(skyColor.r, skyColor.g, skyColor.b);
+        const color = new THREE.Color(hex);
+        
+        // Update hemisphere light (sky)
+        if (window.hemiLight) {
+            window.hemiLight.color.set(color);
+        }
+        
+        // Update sky sphere material if exists
+        if (window.skyMesh) {
+            window.skyMesh.material.color.set(color);
+        }
+        
+        // Update fog color
+        if (window.scene) {
+            window.scene.fog.color.set(color);
+        }
+    }
+    
+    function applyWaterColor() {
+        const hex = rgbToHex(waterColor.r, waterColor.g, waterColor.b);
+        const color = new THREE.Color(hex);
+        
+        // Update ocean manager colors
+        if (window.oceanManager && window.oceanManager.rings) {
+            for (const ring of window.oceanManager.rings) {
+                ring.mesh.material.color.set(color);
+                ring.mesh.material.opacity = waterOpacity;
+            }
+        }
+    }
+    
+    function applyCloudColor() {
+        const hex = rgbToHex(cloudColor.r, cloudColor.g, cloudColor.b);
+        const color = new THREE.Color(hex);
+        
+        // Update cloud system colors
+        if (window.cloudSystem && window.cloudSystem.clouds) {
+            for (const cloudGroup of window.cloudSystem.clouds) {
+                // Clouds are groups with puff meshes as children
+                cloudGroup.traverse(function(child) {
+                    if (child.isMesh && child.material) {
+                        child.material.color.set(color);
+                    }
+                });
+            }
+        }
+    }
+    
+    function applyOceanFloorColor() {
+        const hex = rgbToHex(oceanFloorColor.r, oceanFloorColor.g, oceanFloorColor.b);
+        const color = new THREE.Color(hex);
+        
+        // Update ocean floor tiles
+        if (window.oceanManager && window.oceanManager.oceanFloorTiles) {
+            for (const tile of window.oceanManager.oceanFloorTiles) {
+                tile.material.color.set(color);
+            }
+        }
+    }
+    
+    function applyStarColors() {
+        if (window.starSystem) {
+            window.starSystem.updateColors([
+                new THREE.Color().setRGB(starColor1.r / 255, starColor1.g / 255, starColor1.b / 255),
+                new THREE.Color().setRGB(starColor2.r / 255, starColor2.g / 255, starColor2.b / 255),
+                new THREE.Color().setRGB(starColor3.r / 255, starColor3.g / 255, starColor3.b / 255)
+            ]);
+        }
+    }
+    
+    // Slider event listeners
+    envRedSlider.addEventListener('input', function() {
+        envRedValue.textContent = this.value;
+        updateEnvColorPreview();
+    });
+    
+    envGreenSlider.addEventListener('input', function() {
+        envGreenValue.textContent = this.value;
+        updateEnvColorPreview();
+    });
+    
+    envBlueSlider.addEventListener('input', function() {
+        envBlueValue.textContent = this.value;
+        updateEnvColorPreview();
+    });
+    
+    envOpacitySlider.addEventListener('input', function() {
+        envOpacityValue.textContent = this.value + '%';
+    });
+    
+    // Color swatch click handlers
+    skyColorSwatch.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openEnvColorPicker('sky');
+    });
+    
+    waterColorSwatch.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openEnvColorPicker('water');
+    });
+    
+    cloudColorSwatch.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openEnvColorPicker('cloud');
+    });
+    
+    oceanFloorColorSwatch.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openEnvColorPicker('oceanFloor');
+    });
+    
+    starColor1Swatch.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openEnvColorPicker('starColor1');
+    });
+    
+    starColor2Swatch.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openEnvColorPicker('starColor2');
+    });
+    
+    starColor3Swatch.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openEnvColorPicker('starColor3');
+    });
+    
+    // Stars toggle
+    const starsToggle = document.getElementById('stars-toggle');
+    const starColorsPanel = document.getElementById('star-colors-panel');
+    if (starsToggle) {
+        const savedStarsEnabled = localStorage.getItem('starsEnabled') === 'true';
+        starsToggle.checked = savedStarsEnabled;
+        if (savedStarsEnabled && starColorsPanel) {
+            starColorsPanel.classList.add('visible');
+        }
+        
+        starsToggle.addEventListener('change', function() {
+            localStorage.setItem('starsEnabled', this.checked.toString());
+            if (window.starSystem) {
+                window.starSystem.setVisible(this.checked);
+            }
+            if (starColorsPanel) {
+                starColorsPanel.classList.toggle('visible', this.checked);
+            }
+        });
+    }
+    
+    // Ok button
+    envColorOk.addEventListener('click', function() {
+        applyEnvironmentColors();
+        envColorModal.style.display = 'none';
+    });
+    
+    // Close modal on background click
+    envColorModal.addEventListener('click', function(e) {
+        if (e.target === envColorModal) {
+            envColorModal.style.display = 'none';
+        }
+    });
+    
+    // Initialize environment colors
+    loadEnvironmentColors();
+    
+    // Apply initial colors after scene is loaded
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            applySkyColor();
+            applyWaterColor();
+            applyCloudColor();
+            applyOceanFloorColor();
+            applyStarColors();
+        }, 1000);
+    });
+    
+    // Physics mode toggle
+    const physicsModeToggle = document.getElementById('physics-mode-toggle');
+    if (physicsModeToggle) {
+        // Initialize from saved setting
+        const savedMode = localStorage.getItem('physicsMode') || 'arcade';
+        physicsModeToggle.checked = (savedMode === 'realistic');
+        
+        physicsModeToggle.addEventListener('change', function() {
+            const mode = this.checked ? 'realistic' : 'arcade';
+            window.setPhysicsMode(mode);
+        });
+    }
+    
+    // Reverse elevator toggle
+    const reverseElevatorToggle = document.getElementById('reverse-elevator-toggle');
+    if (reverseElevatorToggle) {
+        // Initialize from saved setting
+        const savedReverse = localStorage.getItem('reverseElevator') === 'true';
+        reverseElevatorToggle.checked = savedReverse;
+        
+        reverseElevatorToggle.addEventListener('change', function() {
+            window.setReverseElevator(this.checked);
+        });
+    }
+    
+    // Float plane toggle
+    const floatPlaneToggle = document.getElementById('float-plane-toggle');
+    if (floatPlaneToggle) {
+        // Initialize from saved setting
+        const savedFloats = localStorage.getItem('hasFloats') === 'true';
+        floatPlaneToggle.checked = savedFloats;
+        
+        floatPlaneToggle.addEventListener('change', function() {
+            window.setHasFloats(this.checked);
+        });
+    }
+    
+    // ========== LIGHTING CONTROLS ==========
+    // Light intensity slider
+    const lightIntensitySlider = document.getElementById('light-intensity-slider');
+    const lightIntensityValue = document.getElementById('light-intensity-value');
+    if (lightIntensitySlider && lightIntensityValue) {
+        // Initialize from saved setting
+        const savedIntensity = localStorage.getItem('sunIntensity');
+        if (savedIntensity) {
+            lightIntensitySlider.value = savedIntensity;
+            lightIntensityValue.textContent = parseFloat(savedIntensity).toFixed(1);
+        }
+        
+        lightIntensitySlider.addEventListener('input', function() {
+            const intensity = parseFloat(this.value);
+            lightIntensityValue.textContent = intensity.toFixed(1);
+            window.setSunIntensity(intensity);
+        });
+    }
+    
+    // ========== SUN COLOR PICKER ==========
+    const sunColorModal = document.getElementById('sun-color-modal');
+    const sunColorPreview = document.getElementById('sun-color-preview');
+    const sunColorHexDisplay = document.getElementById('sun-color-hex-display');
+    const sunRedSlider = document.getElementById('sun-red-slider');
+    const sunGreenSlider = document.getElementById('sun-green-slider');
+    const sunBlueSlider = document.getElementById('sun-blue-slider');
+    const sunRedValue = document.getElementById('sun-red-value');
+    const sunGreenValue = document.getElementById('sun-green-value');
+    const sunBlueValue = document.getElementById('sun-blue-value');
+    const sunColorOk = document.getElementById('sun-color-ok');
+    const sunColorDisplay = document.getElementById('sun-color-display');
+    
+    let currentSunColor = { r: 255, g: 255, b: 204 }; // Default daylight yellow
+    
+    // Load saved sun color
+    const savedSunColorHex = localStorage.getItem('sunColor');
+    if (savedSunColorHex) {
+        const rgb = hexToRgb(savedSunColorHex);
+        if (rgb) {
+            currentSunColor = rgb;
+        }
+    }
+    
+    // Initialize display
+    if (sunColorDisplay) {
+        sunColorDisplay.style.backgroundColor = rgbToHex(currentSunColor.r, currentSunColor.g, currentSunColor.b);
+    }
+    
+    function updateSunColorFromSliders() {
+        const r = parseInt(sunRedSlider.value);
+        const g = parseInt(sunGreenSlider.value);
+        const b = parseInt(sunBlueSlider.value);
+        const hex = rgbToHex(r, g, b);
+        
+        sunColorPreview.style.backgroundColor = hex;
+        sunColorHexDisplay.textContent = hex.toUpperCase();
+        sunRedValue.textContent = r;
+        sunGreenValue.textContent = g;
+        sunBlueValue.textContent = b;
+        
+        return { r, g, b, hex };
+    }
+    
+    function openSunColorPicker() {
+        // Set sliders to current color
+        sunRedSlider.value = currentSunColor.r;
+        sunGreenSlider.value = currentSunColor.g;
+        sunBlueSlider.value = currentSunColor.b;
+        
+        updateSunColorFromSliders();
+        
+        sunColorModal.style.display = 'flex';
+        sunRedSlider.focus();
+    }
+    
+    function applySunColor() {
+        const color = updateSunColorFromSliders();
+        currentSunColor = { r: color.r, g: color.g, b: color.b };
+        
+        // Save to localStorage
+        localStorage.setItem('sunColor', color.hex);
+        
+        // Update display in settings
+        if (sunColorDisplay) {
+            sunColorDisplay.style.backgroundColor = color.hex;
+        }
+        
+        // Apply to actual sun
+        window.setSunColor(color.hex);
+    }
+    
+    // Event listeners for sun color picker
+    if (sunColorDisplay) {
+        sunColorDisplay.addEventListener('click', function(e) {
+            e.stopPropagation();
+            openSunColorPicker();
+        });
+    }
+    
+    if (sunRedSlider) {
+        sunRedSlider.addEventListener('input', function() {
+            applySunColor();
+        });
+    }
+    
+    if (sunGreenSlider) {
+        sunGreenSlider.addEventListener('input', function() {
+            applySunColor();
+        });
+    }
+    
+    if (sunBlueSlider) {
+        sunBlueSlider.addEventListener('input', function() {
+            applySunColor();
+        });
+    }
+    
+    if (sunColorOk) {
+        sunColorOk.addEventListener('click', function() {
+            sunColorModal.style.display = 'none';
+        });
+    }
+    
+    // Close modal when clicking outside
+    if (sunColorModal) {
+        sunColorModal.addEventListener('click', function(e) {
+            if (e.target === sunColorModal) {
+                sunColorModal.style.display = 'none';
+            }
+        });
+    }
+    
+    // Sun position widget
+    const sunHandle = document.getElementById('sun-handle');
+    const sunPositionContainer = document.querySelector('.sun-position-container');
+    const sunElevationValue = document.getElementById('sun-elevation-value');
+    const sunAzimuthValue = document.getElementById('sun-azimuth-value');
+    const sunTimeHint = document.getElementById('sun-time-hint');
+    
+    let isDraggingSun = false;
+    
+    function getTimeOfDayHint(elevation, azimuth) {
+        if (elevation < 5) {
+            if (azimuth < 90) return 'Sunrise';
+            if (azimuth > 270) return 'Sunrise';
+            return 'Sunset';
+        }
+        if (elevation < 20) {
+            if (azimuth < 180) return 'Early Morning';
+            return 'Late Afternoon';
+        }
+        if (elevation < 45) {
+            if (azimuth < 180) return 'Morning';
+            return 'Afternoon';
+        }
+        if (elevation < 70) return 'Mid-day';
+        return 'High Noon';
+    }
+    
+    function updateSunWidgetFromPosition(elevation, azimuth) {
+        // Convert to widget coordinates (0-1 range, where center is zenith)
+        // Elevation: 90° = center (zenith), 0° = edge (horizon)
+        // Azimuth: 0° = north (left), 90° = east (top), 180° = south (right), 270° = west (bottom)
+        
+        const elevationRad = (elevation * Math.PI) / 180;
+        const azimuthRad = (azimuth * Math.PI) / 180;
+        
+        // Distance from center (0 at zenith, 1 at horizon)
+        const normalizedDistance = 1 - (elevation / 90);
+        
+        // Widget uses: x increases right, y increases down
+        // Azimuth mapping: 0° (N) = left/negative x, 90° (E) = up/negative y, etc.
+        // Adjusting to match compass: N=left, E=top, S=right, W=bottom
+        const centerX = 50; // percentage
+        const centerY = 50; // percentage
+        
+        // For the widget: 0° = west (bottom), 90° = north (left), 180° = east (top), 270° = south (right)
+        // But we want compass: 0° = north, 90° = east, 180° = south, 270° = west
+        // Transform: widgetAngle = (compassAzimuth + 270) % 360
+        const widgetAngle = (azimuth + 270) % 360;
+        const widgetRad = (widgetAngle * Math.PI) / 180;
+        
+        const radius = 45; // max radius in percentage (leave padding)
+        const distance = normalizedDistance * radius;
+        
+        const x = centerX + Math.cos(widgetRad) * distance;
+        const y = centerY + Math.sin(widgetRad) * distance;
+        
+        sunHandle.style.left = x + '%';
+        sunHandle.style.top = y + '%';
+        
+        // Update text displays
+        sunElevationValue.textContent = Math.round(elevation) + '°';
+        sunAzimuthValue.textContent = Math.round(azimuth) + '°';
+        sunTimeHint.textContent = getTimeOfDayHint(elevation, azimuth);
+    }
+    
+    function updateSunPositionFromWidget(clientX, clientY) {
+        if (!sunPositionContainer) return;
+        
+        const rect = sunPositionContainer.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        // Calculate position relative to center
+        const dx = clientX - centerX;
+        const dy = clientY - centerY;
+        
+        // Calculate distance and angle
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const maxRadius = rect.width / 2;
+        
+        // Clamp to circle
+        const clampedDistance = Math.min(distance, maxRadius);
+        
+        // Elevation: 90° at center, 0° at edge
+        const normalizedDistance = clampedDistance / maxRadius;
+        const elevation = 90 * (1 - normalizedDistance);
+        
+        // Azimuth calculation
+        // Widget: 0° (E) = right/positive x, 90° (S) = down/positive y
+        // But we want: 0° = north, 90° = east, 180° = south, 270° = west
+        let angle = Math.atan2(dy, dx) * (180 / Math.PI); // -180 to 180, 0 = right (E)
+        // Transform: widget angle to compass azimuth
+        // Widget 0° (right/E) → Compass 90° (E)
+        // Widget 90° (bottom/S) → Compass 180° (S)
+        // Widget 180° (left/W) → Compass 270° (W)
+        // Widget -90°/270° (top/N) → Compass 0° (N)
+        let azimuth = (angle + 90) % 360;
+        if (azimuth < 0) azimuth += 360;
+        
+        // Update display
+        updateSunWidgetFromPosition(elevation, azimuth);
+        
+        // Apply to actual sun
+        window.setSunPosition(elevation, azimuth);
+    }
+    
+    // Initialize from saved position
+    const savedElevation = localStorage.getItem('sunElevation');
+    const savedAzimuth = localStorage.getItem('sunAzimuth');
+    if (savedElevation && savedAzimuth) {
+        updateSunWidgetFromPosition(parseFloat(savedElevation), parseFloat(savedAzimuth));
+    } else {
+        // Default position
+        updateSunWidgetFromPosition(45, 135);
+    }
+    
+    // Mouse/touch events for sun position widget
+    if (sunPositionContainer && sunHandle) {
+        sunPositionContainer.addEventListener('mousedown', function(e) {
+            isDraggingSun = true;
+            updateSunPositionFromWidget(e.clientX, e.clientY);
+        });
+        
+        sunHandle.addEventListener('mousedown', function(e) {
+            e.stopPropagation();
+            isDraggingSun = true;
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+            if (isDraggingSun) {
+                e.preventDefault();
+                updateSunPositionFromWidget(e.clientX, e.clientY);
+            }
+        });
+        
+        document.addEventListener('mouseup', function() {
+            isDraggingSun = false;
+        });
+        
+        // Touch support
+        sunPositionContainer.addEventListener('touchstart', function(e) {
+            isDraggingSun = true;
+            const touch = e.touches[0];
+            updateSunPositionFromWidget(touch.clientX, touch.clientY);
+        }, { passive: false });
+        
+        sunHandle.addEventListener('touchstart', function(e) {
+            e.stopPropagation();
+            isDraggingSun = true;
+        }, { passive: false });
+        
+        document.addEventListener('touchmove', function(e) {
+            if (isDraggingSun) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                updateSunPositionFromWidget(touch.clientX, touch.clientY);
+            }
+        }, { passive: false });
+        
+        document.addEventListener('touchend', function() {
+            isDraggingSun = false;
+        });
+    }
+    
     // ========== SETTINGS MODAL ==========
     const settingsModal = document.getElementById('settings-modal');
     const settingsBtn = document.getElementById('desktop-settings-btn');
@@ -1177,6 +2175,22 @@ document.addEventListener('DOMContentLoaded', function() {
             balloonsDistValue.textContent = balloonSys.maxDrawDist + 'm';
             balloonsDensitySlider.value = Math.round(balloonSys.densityMultiplier * 100);
             balloonsDensityValue.textContent = Math.round(balloonSys.densityMultiplier * 100) + '%';
+        }
+        
+        const waveHeightSlider = document.getElementById('wave-height-slider');
+        const waveHeightValue = document.getElementById('wave-height-value');
+        const waveIntensitySlider = document.getElementById('wave-intensity-slider');
+        const waveIntensityValue = document.getElementById('wave-intensity-value');
+        const waveWidthSlider = document.getElementById('wave-width-slider');
+        const waveWidthValue = document.getElementById('wave-width-value');
+        if (window.oceanManager && window.oceanManager.waveSystem) {
+            const waveSys = window.oceanManager.waveSystem;
+            waveHeightSlider.value = Math.round(waveSys.heightMultiplier * 100);
+            waveHeightValue.textContent = Math.round(waveSys.heightMultiplier * 100) + '%';
+            waveIntensitySlider.value = Math.round(waveSys.speedMultiplier * 100);
+            waveIntensityValue.textContent = Math.round(waveSys.speedMultiplier * 100) + '%';
+            waveWidthSlider.value = Math.round(waveSys.steepnessMultiplier * 100);
+            waveWidthValue.textContent = Math.round(waveSys.steepnessMultiplier * 100) + '%';
         }
     }
     
@@ -1369,6 +2383,42 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.balloonSystem) {
             window.balloonSystem.densityMultiplier = val / 100;
         }
+    });
+    
+    // Wave height slider
+    const waveHeightSlider = document.getElementById('wave-height-slider');
+    const waveHeightValue = document.getElementById('wave-height-value');
+    waveHeightSlider.addEventListener('input', function() {
+        const val = parseInt(this.value);
+        waveHeightValue.textContent = val + '%';
+        if (window.oceanManager && window.oceanManager.waveSystem) {
+            window.oceanManager.waveSystem.setHeightMultiplier(val / 100);
+        }
+        localStorage.setItem('waveHeight', val);
+    });
+    
+    // Wave intensity slider
+    const waveIntensitySlider = document.getElementById('wave-intensity-slider');
+    const waveIntensityValue = document.getElementById('wave-intensity-value');
+    waveIntensitySlider.addEventListener('input', function() {
+        const val = parseInt(this.value);
+        waveIntensityValue.textContent = val + '%';
+        if (window.oceanManager && window.oceanManager.waveSystem) {
+            window.oceanManager.waveSystem.setSpeedMultiplier(val / 100);
+        }
+        localStorage.setItem('waveIntensity', val);
+    });
+    
+    // Wave width slider
+    const waveWidthSlider = document.getElementById('wave-width-slider');
+    const waveWidthValue = document.getElementById('wave-width-value');
+    waveWidthSlider.addEventListener('input', function() {
+        const val = parseInt(this.value);
+        waveWidthValue.textContent = val + '%';
+        if (window.oceanManager && window.oceanManager.waveSystem) {
+            window.oceanManager.waveSystem.setSteepnessMultiplier(val / 100);
+        }
+        localStorage.setItem('waveWidth', val);
     });
     
     // Boats density
@@ -1705,6 +2755,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function init() {
             scene = new THREE.Scene();
+            window.scene = scene; // Make globally accessible for color picker
             // Warm afternoon sky
             scene.background = new THREE.Color(0x87CEEB);
             // FogExp2 with density tuned for 3km ocean ring - smooth fade at outer edge
@@ -1737,6 +2788,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     highlight: selectedHighlightColor
                 });
                 window.aircraft = aircraft;
+                
+                // Apply saved physics mode
+                const savedPhysicsMode = localStorage.getItem('physicsMode') || 'arcade';
+                if (window.aircraft) {
+                    window.aircraft.setPhysicsMode(savedPhysicsMode);
+                }
+                window.updateControlsHint(savedPhysicsMode);
+                
+                // Apply saved float plane setting
+                const savedHasFloats = localStorage.getItem('hasFloats') === 'true';
+                if (window.aircraft) {
+                    window.aircraft.setHasFloats(savedHasFloats);
+                }
             scene.add(aircraft.mesh);
             
             orbitCamera = new OrbitCamera(camera, aircraft);
@@ -1759,9 +2823,44 @@ document.addEventListener('DOMContentLoaded', function() {
             // Create dynamic ocean (function is global from environment.js)
             if (typeof createDynamicOcean === 'function') {
               createDynamicOcean(scene, camera);
+              
+              // Apply saved wave settings
+              const savedWaveHeight = localStorage.getItem('waveHeight');
+              const savedWaveIntensity = localStorage.getItem('waveIntensity');
+              const savedWaveWidth = localStorage.getItem('waveWidth');
+              if (savedWaveHeight !== null && window.oceanManager && window.oceanManager.waveSystem) {
+                const heightVal = parseInt(savedWaveHeight);
+                window.oceanManager.waveSystem.setHeightMultiplier(heightVal / 100);
+              }
+              if (savedWaveIntensity !== null && window.oceanManager && window.oceanManager.waveSystem) {
+                const intensityVal = parseInt(savedWaveIntensity);
+                window.oceanManager.waveSystem.setSpeedMultiplier(intensityVal / 100);
+              }
+              if (savedWaveWidth !== null && window.oceanManager && window.oceanManager.waveSystem) {
+                const widthVal = parseInt(savedWaveWidth);
+                window.oceanManager.waveSystem.setSteepnessMultiplier(widthVal / 100);
+              }
+            }
+            
+            // Create water splash system for float planes
+            if (typeof WaterSplashSystem !== 'undefined') {
+                splashSystem = new WaterSplashSystem(scene);
+                window.splashSystem = splashSystem;
             }
             
             cloudSystem = new CloudSystem(scene);
+            window.cloudSystem = cloudSystem;
+            
+            // Create star system
+            if (typeof createStarSystem === 'function') {
+                createStarSystem(scene);
+            }
+            
+            // Apply saved stars toggle
+            const starsEnabled = localStorage.getItem('starsEnabled') === 'true';
+            if (window.starSystem) {
+                window.starSystem.setVisible(starsEnabled);
+            }
             
             updateLoading(10);
             createAllIslands(scene, (progress) => {
@@ -1848,6 +2947,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update ocean waves (function is global from environment.js)
             if (typeof updateOcean === 'function') {
               updateOcean(delta);
+            }
+            
+            // Update water splash effects
+            if (window.splashSystem) {
+                window.splashSystem.update(delta);
             }
             
             const keyboardInput = getKeyboardInput();

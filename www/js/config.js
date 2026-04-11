@@ -101,3 +101,72 @@ function getDeviceDefaultPreset() {
     const deviceType = detectDeviceType();
     return deviceType === 'mobile' ? 'mobile' : 'desktop';
 }
+
+// Physics mode configuration
+let physicsMode = localStorage.getItem('physicsMode') || 'arcade';
+
+// Float plane configuration (default enabled)
+let hasFloats = localStorage.getItem('hasFloats') !== 'false';
+
+// Elevator reverse for mobile widget and keyboard
+let reverseElevator = localStorage.getItem('reverseElevator') === 'true';
+
+function getPhysicsMode() {
+    return physicsMode;
+}
+
+function setPhysicsMode(mode) {
+    physicsMode = mode;
+    localStorage.setItem('physicsMode', mode);
+    
+    // Update aircraft if exists
+    if (window.aircraft) {
+        window.aircraft.setPhysicsMode(mode);
+    }
+    
+    // Update controls hint
+    updateControlsHint(mode);
+}
+
+function getHasFloats() {
+    return hasFloats;
+}
+
+function setHasFloats(enabled) {
+    hasFloats = enabled;
+    localStorage.setItem('hasFloats', enabled);
+    
+    // Update aircraft if exists
+    if (window.aircraft) {
+        window.aircraft.setHasFloats(enabled);
+    }
+}
+
+function getReverseElevator() {
+    return reverseElevator;
+}
+
+function setReverseElevator(reverse) {
+    reverseElevator = reverse;
+    localStorage.setItem('reverseElevator', reverse);
+}
+
+function updateControlsHint(mode) {
+    const hint = document.getElementById('controls-hint');
+    if (!hint) return;
+    
+    if (mode === 'realistic') {
+        hint.textContent = 'WASD: Pitch/Roll | QE: Rudder (coordinate turns) | Shift/Ctrl: Throttle | Space: Brake | R: Reset | C: Config';
+    } else {
+        hint.textContent = 'WASD: Pitch/Roll | QE: Yaw | Shift/Ctrl: Throttle | Space: Brake | R: Reset | C: Config';
+    }
+}
+
+// Export for global access
+window.getPhysicsMode = getPhysicsMode;
+window.setPhysicsMode = setPhysicsMode;
+window.getHasFloats = getHasFloats;
+window.setHasFloats = setHasFloats;
+window.updateControlsHint = updateControlsHint;
+window.getReverseElevator = getReverseElevator;
+window.setReverseElevator = setReverseElevator;

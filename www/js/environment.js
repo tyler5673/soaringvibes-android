@@ -1,13 +1,20 @@
 // ========== ENVIRONMENT ==========
+let hemiLight = null;
+let skyMesh = null;
+let sunMesh = null;
+let sunLight = null;
+
 function createSky(scene) {
+    // Create sun mesh (visual representation)
     const sunGeo = new THREE.SphereGeometry(400, 32, 32);
     const sunMat = new THREE.MeshBasicMaterial({ color: 0xffffcc });
-    const sun = new THREE.Mesh(sunGeo, sunMat);
-    sun.position.set(8000, 6000, -10000);
-    scene.add(sun);
+    sunMesh = new THREE.Mesh(sunGeo, sunMat);
+    sunMesh.position.set(8000, 6000, -10000);
+    scene.add(sunMesh);
     
-    const sunLight = new THREE.DirectionalLight(0xffffff, 1.5);
-    sunLight.position.copy(sun.position);
+    // Create sun light (main directional light)
+    sunLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    sunLight.position.copy(sunMesh.position);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.width = 2048;
     sunLight.shadow.mapSize.height = 2048;
@@ -19,9 +26,129 @@ function createSky(scene) {
     sunLight.shadow.camera.bottom = -2000;
     scene.add(sunLight);
     
-    const hemiLight = new THREE.HemisphereLight(0x87CEEB, 0x006994, 0.8);
+    hemiLight = new THREE.HemisphereLight(0x87CEEB, 0x006994, 0.8);
     scene.add(hemiLight);
+    
+    // Create sky dome
+    const skyGeo = new THREE.SphereGeometry(40000, 32, 32);
+    const skyMat = new THREE.MeshBasicMaterial({
+        color: 0x87CEEB,
+        side: THREE.BackSide
+    });
+    skyMesh = new THREE.Mesh(skyGeo, skyMat);
+    scene.add(skyMesh);
+    
+    // Expose to window for external control
+    window.hemiLight = hemiLight;
+    window.skyMesh = skyMesh;
+    window.sunMesh = sunMesh;
+    window.sunLight = sunLight;
+    
+    // Initialize lighting configuration
+    initLightingConfig();
 }
+
+// Lighting configuration
+const DEFAULT_LIGHT_CONFIG = {
+    intensity: 1.5,
+    color: '#ffffff',
+    sunElevation: 45, // degrees above horizon (0 = sunrise/sunset, 90 = noon)
+    sunAzimuth: 135   // degrees from north (0 = north, 90 = east, 180 = south, 270 = west)
+};
+
+function initLightingConfig() {
+    // Load saved config or use defaults
+    const savedIntensity = localStorage.getItem('sunIntensity');
+    const savedColor = localStorage.getItem('sunColor');
+    const savedElevation = localStorage.getItem('sunElevation');
+    const savedAzimuth = localStorage.getItem('sunAzimuth');
+    
+    const config = {
+        intensity: savedIntensity ? parseFloat(savedIntensity) : DEFAULT_LIGHT_CONFIG.intensity,
+        color: savedColor || DEFAULT_LIGHT_CONFIG.color,
+        sunElevation: savedElevation ? parseFloat(savedElevation) : DEFAULT_LIGHT_CONFIG.sunElevation,
+        sunAzimuth: savedAzimuth ? parseFloat(savedAzimuth) : DEFAULT_LIGHT_CONFIG.sunAzimuth
+    };
+    
+    applyLightingConfig(config);
+}
+
+function applyLightingConfig(config) {
+    if (!sunLight || !sunMesh) return;
+    
+    // Apply intensity
+    sunLight.intensity = config.intensity;
+    
+    // Apply color
+    sunLight.color.set(config.color);
+    sunMesh.material.color.set(config.color);
+    
+    // Calculate sun position from elevation and azimuth
+    // Distance from origin - fixed far distance
+    const distance = 12000;
+    
+    // Convert to radians
+    const elevationRad = (config.sunElevation * Math.PI) / 180;
+    const azimuthRad = (config.sunAzimuth * Math.PI) / 180;
+    
+    // Calculate position
+    // Azimuth: 0 = north (negative Z), 90 = east (positive X), etc.
+    // Elevation: 0 = horizon, 90 = directly overhead
+    const x = distance * Math.cos(elevationRad) * Math.sin(azimuthRad);
+    const y = distance * Math.sin(elevationRad);
+    const z = -distance * Math.cos(elevationRad) * Math.cos(azimuthRad);
+    
+    sunMesh.position.set(x, y, z);
+    sunLight.position.copy(sunMesh.position);
+    
+    // Update hemisphere light based on sun elevation (darker ground at low sun)
+    if (hemiLight) {
+        const groundIntensity = Math.max(0.2, config.intensity * 0.5 * Math.sin(elevationRad));
+        hemiLight.intensity = Math.max(0.3, config.intensity * 0.5);
+        hemiLight.groundColor.setHSL(0.6, 0.5, Math.max(0.1, 0.2 + groundIntensity * 0.2));
+    }
+}
+
+function setSunIntensity(intensity) {
+    localStorage.setItem('sunIntensity', intensity);
+    if (sunLight) sunLight.intensity = intensity;
+}
+
+function setSunColor(color) {
+    localStorage.setItem('sunColor', color);
+    if (sunLight) sunLight.color.set(color);
+    if (sunMesh) sunMesh.material.color.set(color);
+}
+
+function setSunPosition(elevation, azimuth) {
+    localStorage.setItem('sunElevation', elevation);
+    localStorage.setItem('sunAzimuth', azimuth);
+    
+    if (!sunMesh || !sunLight) return;
+    
+    const distance = 12000;
+    const elevationRad = (elevation * Math.PI) / 180;
+    const azimuthRad = (azimuth * Math.PI) / 180;
+    
+    const x = distance * Math.cos(elevationRad) * Math.sin(azimuthRad);
+    const y = distance * Math.sin(elevationRad);
+    const z = -distance * Math.cos(elevationRad) * Math.cos(azimuthRad);
+    
+    sunMesh.position.set(x, y, z);
+    sunLight.position.copy(sunMesh.position);
+    
+    // Update hemisphere light based on elevation
+    if (hemiLight && sunLight) {
+        const groundIntensity = Math.max(0.2, sunLight.intensity * 0.5 * Math.sin(elevationRad));
+        hemiLight.intensity = Math.max(0.3, sunLight.intensity * 0.5);
+        hemiLight.groundColor.setHSL(0.6, 0.5, Math.max(0.1, 0.2 + groundIntensity * 0.2));
+    }
+}
+
+// Export for global access
+window.setSunIntensity = setSunIntensity;
+window.setSunColor = setSunColor;
+window.setSunPosition = setSunPosition;
 
 // ========== DYNAMIC OCEAN ==========
 // Dynamic ocean imported from ocean.js - exposed globally for boat integration
@@ -54,6 +181,26 @@ function updateOcean(deltaTime) {
 // Expose globally for index.html access
 window.createDynamicOcean = createDynamicOcean;
 window.updateOcean = updateOcean;
+
+// ========== STAR SYSTEM ==========
+let starSystemInstance = null;
+
+/**
+ * Create star system
+ */
+function createStarSystem(scene) {
+    if (starSystemInstance) {
+        starSystemInstance.dispose();
+    }
+    starSystemInstance = new StarSystem(scene, 2000);
+    window.starSystem = starSystemInstance;
+    console.log('[Stars] Star system initialized');
+}
+
+/**
+ * Expose to window
+ */
+window.createStarSystem = createStarSystem;
 
 /**
  * Get wave height at world coordinates (for boats, collision)
@@ -116,11 +263,11 @@ class CloudSystem {
                 opacity: opacity,
                 roughness: 0.5,
                 depthWrite: false,
-                depthTest: true,
-                renderOrder: 1000
+                depthTest: true
             });
             
             const puff = new THREE.Mesh(puffGeo, puffMat);
+            puff.renderOrder = 1000;
             
             const theta = Math.random() * Math.PI * 2;
             const r = Math.random() * spread;
@@ -237,5 +384,124 @@ class CloudSystem {
                 island.z + Math.sin(angle) * radius
             );
         }
+    }
+}
+
+// ========== STAR SYSTEM ==========
+class StarSystem {
+    constructor(scene, count = 2000) {
+        this.scene = scene;
+        this.starCount = count;
+        this.visible = false;
+        this.starColors = [
+            new THREE.Color(0xE8F4FF),
+            new THREE.Color(0xFFF8E8),
+            new THREE.Color(0xF0F8FF)
+        ];
+        
+        this.createStarTexture();
+        this.createStars();
+    }
+    
+    createStarTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        
+        const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        gradient.addColorStop(0.3, 'rgba(255, 255, 255, 0.8)');
+        gradient.addColorStop(0.6, 'rgba(255, 255, 255, 0.3)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 64, 64);
+        
+        this.starTexture = new THREE.CanvasTexture(canvas);
+    }
+    
+    createStars() {
+        const positions = new Float32Array(this.starCount * 3);
+        const colors = new Float32Array(this.starCount * 3);
+        const sizes = new Float32Array(this.starCount);
+        
+        const radius = 30000;
+        const minAltitude = 5000;
+        const maxAltitude = 15000;
+        
+        for (let i = 0; i < this.starCount; i++) {
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            
+            const r = radius;
+            const x = r * Math.sin(phi) * Math.cos(theta);
+            const y = minAltitude + Math.random() * (maxAltitude - minAltitude);
+            const z = r * Math.sin(phi) * Math.sin(theta);
+            
+            positions[i * 3] = x;
+            positions[i * 3 + 1] = y;
+            positions[i * 3 + 2] = z;
+            
+            const colorIndex = Math.floor(Math.random() * 3);
+            const color = this.starColors[colorIndex];
+            colors[i * 3] = color.r;
+            colors[i * 3 + 1] = color.g;
+            colors[i * 3 + 2] = color.b;
+            
+            sizes[i] = 30 + Math.random() * 50;
+        }
+        
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+        
+        const material = new THREE.PointsMaterial({
+            size: 80,
+            map: this.starTexture,
+            vertexColors: true,
+            transparent: true,
+            opacity: 1.0,
+            sizeAttenuation: true,
+            depthWrite: false,
+            fog: false
+        });
+        
+        this.stars = new THREE.Points(geometry, material);
+        this.stars.visible = false;
+        this.stars.renderOrder = -100;
+        this.scene.add(this.stars);
+        console.log('[Stars] Created', this.starCount, 'stars');
+    }
+    
+    setVisible(visible) {
+        this.visible = visible;
+        this.stars.visible = visible;
+    }
+    
+    updateColors(colors) {
+        if (colors && colors.length === 3) {
+            this.starColors = colors;
+        }
+        
+        const colorAttr = this.stars.geometry.getAttribute('color');
+        
+        for (let i = 0; i < this.starCount; i++) {
+            const colorIndex = Math.floor(Math.random() * 3);
+            const color = this.starColors[colorIndex];
+            colorAttr.array[i * 3] = color.r;
+            colorAttr.array[i * 3 + 1] = color.g;
+            colorAttr.array[i * 3 + 2] = color.b;
+        }
+        
+        colorAttr.needsUpdate = true;
+    }
+    
+    dispose() {
+        this.stars.geometry.dispose();
+        this.stars.material.dispose();
+        this.starTexture.dispose();
+        this.scene.remove(this.stars);
     }
 }

@@ -3,6 +3,7 @@ class Aircraft {
     constructor(colors) {
         this.mass = 1100;
         this.wingArea = 16;
+        this.wingspan = 11;  // meters
         this.maxThrust = 3500;
         this.maxSpeed = 80;
         this.airDensity = 1.225;
@@ -22,6 +23,16 @@ class Aircraft {
         this.groundSpeed = 0;
         this.crashed = false;
         this.abbyMode = false;
+        this.physicsMode = 'arcade';  // 'arcade' or 'realistic'
+        this.hasFloats = false;  // Float plane configuration
+        this.floatsGroup = null;  // Reference to floats mesh group
+        this.waterPhysics = {
+            isOnWater: false,
+            waterLevel: 0,
+            buoyancyForce: 0,
+            dragMultiplier: 1.0
+        };
+        this.physics = null;  // Will be initialized in initPhysics()
         
         this.propeller = null;
         this.leftFlap = null;
@@ -33,6 +44,9 @@ class Aircraft {
         
         this.colors = colors || { main: '#ffffff', highlight: '#0066cc' };
         this.mesh = this.createMesh();
+        
+        // Create initial landing gear (wheels by default)
+        this.createLandingGear();
     }
     
     setRandomStartPosition() {
@@ -544,82 +558,7 @@ var spinnerStripeBottom = new THREE.Mesh(
         this.elevator.position.set(0, hStabY + 0.02, tailZ + hStabChord * 0.25);
         group.add(this.elevator);
         
-        // === LANDING GEAR ===
-        // Properly angled struts connecting wheels to fuselage
-        const noseWheelY = -0.85;
-        const noseWheelZ = -2.3;
-        const mainWheelY = -0.9;
-        const mainWheelZ = 1.2;
-        const mainWheelSpread = 1.25;
-        
-        // Fuselage attach points
-        const noseAttachY = -0.25;
-        const noseAttachZ = -1.8;
-        const mainAttachY = -0.3;
-        const mainAttachX = 0.65;
-        
-        // Nose gear strut - calculate angle and length
-        const noseStrutLen = Math.sqrt(
-            Math.pow(noseWheelY - noseAttachY, 2) + 
-            Math.pow(noseWheelZ - noseAttachZ, 2)
-        );
-        const noseStrutAngle = Math.atan2(noseWheelY - noseAttachY, noseWheelZ - noseAttachZ);
-        
-        const noseStrut = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.05, 0.04, noseStrutLen, 8),
-            strutMat
-        );
-        noseStrut.position.set(0, (noseAttachY + noseWheelY) / 2, (noseAttachZ + noseWheelZ) / 2);
-        noseStrut.rotation.x = noseStrutAngle + Math.PI / 2;
-        noseStrut.userData = { isStrut: true };
-        group.add(noseStrut);
-        
-        // Nose wheel
-        const noseWheel = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.16, 0.16, 0.1, 14),
-            wheelMat
-        );
-        noseWheel.rotation.z = Math.PI / 2;
-        noseWheel.position.set(0, noseWheelY, noseWheelZ);
-        noseWheel.userData = { isWheel: true };
-        group.add(noseWheel);
-        
-        // Main gear struts (left and right)
-        [-1, 1].forEach(side => {
-            // Calculate strut geometry
-            const strutLen = Math.sqrt(
-                Math.pow(mainWheelY - mainAttachY, 2) + 
-                Math.pow(mainWheelSpread - mainAttachX, 2) +
-                Math.pow(mainWheelZ - mainWheelZ, 2) // Z is same, but keep for clarity
-            );
-            // Angle in X-Y plane (outward angle)
-            const outwardAngle = Math.atan2(mainWheelSpread - mainAttachX, mainAttachY - mainWheelY);
-            
-            const strut = new THREE.Mesh(
-                new THREE.CylinderGeometry(0.06, 0.05, Math.abs(mainAttachY - mainWheelY) + 0.1, 8),
-                strutMat
-            );
-            // Position at midpoint between attach point and wheel
-            strut.position.set(
-                side * (mainAttachX + mainWheelSpread) / 2,
-                (mainAttachY + mainWheelY) / 2,
-                mainWheelZ
-            );
-            // Rotate to angle outward and down
-            strut.rotation.z = side * outwardAngle;
-            strut.userData = { isStrut: true };
-            group.add(strut);
-            
-            // Main wheel
-            const wheel = new THREE.Mesh(
-                new THREE.CylinderGeometry(0.2, 0.2, 0.12, 14),
-                wheelMat
-            );
-            wheel.rotation.z = Math.PI / 2;
-            wheel.position.set(side * mainWheelSpread, mainWheelY, mainWheelZ);
-            wheel.userData = { isWheel: true };
-            group.add(wheel);
-        });
+        // Landing gear will be added by createLandingGear() after mesh creation
         
         // === ANTENNAS ===
         // VOR antenna on top of vertical stabilizer
@@ -646,7 +585,8 @@ var spinnerStripeBottom = new THREE.Mesh(
     }
     
     setControlInput(input) {
-        this.controlInput.pitch = input.pitch;
+        const reverseElevator = window.getReverseElevator ? window.getReverseElevator() : false;
+        this.controlInput.pitch = reverseElevator ? -input.pitch : input.pitch;
         this.controlInput.roll = input.roll;
         this.controlInput.yaw = input.yaw;
     }
@@ -687,134 +627,20 @@ var spinnerStripeBottom = new THREE.Mesh(
             console.log(`Frame ${this._debugFrame}: vel=(${this.velocity.x.toFixed(1)}, ${this.velocity.y.toFixed(1)}, ${this.velocity.z.toFixed(1)}), rotY=${this.rotation.y.toFixed(2)}`);
         }
         
-        // Animate propeller based on throttle
-        if (this.propeller) {
-            this.propeller.rotation.z += this.throttle * 25 * delta;
+        // Initialize physics if not set
+        if (!this.physics) {
+            this.initPhysics();
         }
         
-        // Animate control surfaces based on input
-        const flapAngle = this.controlInput.roll * 0.35;
-        if (this.leftFlap) this.leftFlap.rotation.x = flapAngle;
-        if (this.rightFlap) this.rightFlap.rotation.x = flapAngle;
+        // Delegate to physics strategy
+        this.physics.update(delta);
         
-        const aileronAngle = this.controlInput.roll * 0.3;
-        if (this.aileronL) this.aileronL.rotation.x = -aileronAngle;
-        if (this.aileronR) this.aileronR.rotation.x = aileronAngle;
-        
-        const elevatorAngle = this.controlInput.pitch * 0.3;
-        if (this.elevator) this.elevator.rotation.x = -elevatorAngle;
-        
-        const rudderAngle = this.controlInput.yaw * 0.35;
-        if (this.rudder) this.rudder.rotation.y = rudderAngle;
-        
-        // Physics
-        const forward = new THREE.Vector3(0, 0, -1);
-        forward.applyEuler(this.rotation);
-        
-        const aircraftUp = new THREE.Vector3(0, 1, 0);
-        aircraftUp.applyEuler(this.rotation);
-        
-        const right = new THREE.Vector3(1, 0, 0);
-        right.applyEuler(this.rotation);
-        
-        const thrustMagnitude = this.throttle * this.maxThrust;
-        const thrust = forward.clone().multiplyScalar(thrustMagnitude);
-        
-        const speed = this.velocity.length();
-        
-        let aoa = 0;
-        if (speed > 1) {
-            const velocityDir = this.velocity.clone().normalize();
-            aoa = forward.angleTo(velocityDir);
-            const pitchComponent = velocityDir.dot(aircraftUp);
-            if (pitchComponent > 0) aoa = -aoa;
-        }
-        
-        const stallAngle = degreesToRadians(15);
-        let cl;
-        if (Math.abs(aoa) < stallAngle) {
-            cl = 2 * Math.PI * aoa;
-        } else {
-            cl = 2 * Math.PI * stallAngle * 0.5 * Math.sign(aoa);
-        }
-        cl = clamp(cl, -1.5, 1.5);
-        
-        const cd0 = 0.025;
-        const k = 0.04;
-        const cd = cd0 + k * cl * cl;
-        
-        const q = 0.5 * this.airDensity * speed * speed;
-        
-        // Lift perpendicular to velocity, in plane of aircraft up
-        const velocityDir = speed > 0.1 ? this.velocity.clone().normalize() : forward.clone();
-        let liftDir = new THREE.Vector3().crossVectors(right, velocityDir).normalize();
-        if (liftDir.length() < 0.1) {
-            liftDir = aircraftUp.clone();
-        }
-        const lift = liftDir.multiplyScalar(q * this.wingArea * cl);
-        
-        const drag = velocityDir.clone().multiplyScalar(-q * this.wingArea * cd);
-        
-        const weight = new THREE.Vector3(0, -this.mass * 9.81, 0);
-        
-        const groundEffectHeight = 20;
-        if (this.position.y < groundEffectHeight && this.position.y > 0) {
-            const effect = 1 - (this.position.y / groundEffectHeight);
-            lift.multiplyScalar(1 + effect * 0.5);
-            drag.multiplyScalar(1 - effect * 0.3);
-        }
-        
-        const totalForce = new THREE.Vector3().add(thrust).add(lift).add(drag).add(weight);
-        const acceleration = totalForce.divideScalar(this.mass);
-        
-        this.velocity.add(acceleration.multiplyScalar(delta));
-        
-        if (speed > this.maxSpeed) {
-            this.velocity.multiplyScalar(this.maxSpeed / speed);
-        }
-        
-        this.position.add(this.velocity.clone().multiplyScalar(delta));
-        
-        if (this.position.y < 0) {
-            this.position.y = 0;
-            if (this.velocity.y < 0) this.velocity.y = 0;
-        }
-        
-        this.updateRotation(delta, speed);
-        
-        this.altitude = this.position.y;
-        this.groundSpeed = speed;
-        this.ias = speed * 1.944;
-        
+        // Update mesh
         this.mesh.position.copy(this.position);
         this.mesh.rotation.copy(this.rotation);
         
         // Apply auto-brake when on ground with low throttle
         this.applyAutoBrake(delta);
-    }
-    
-    updateRotation(delta, speed) {
-        const controlEffectiveness = Math.min(1, speed / 30);
-        
-        this.rotation.x += this.controlInput.pitch * this.pitchRate * delta * controlEffectiveness;
-        this.rotation.x = clamp(this.rotation.x, degreesToRadians(-45), degreesToRadians(45));
-        
-        this.rotation.z -= this.controlInput.roll * this.rollRate * delta * controlEffectiveness;
-        this.rotation.z = clamp(this.rotation.z, degreesToRadians(-60), degreesToRadians(60));
-        
-        this.rotation.y += this.controlInput.yaw * this.yawRate * delta * controlEffectiveness;
-        
-        if (speed > 20) {
-            this.rotation.z *= 0.99;
-        }
-        
-        if (speed > 20 && Math.abs(this.controlInput.pitch) < 0.1) {
-            this.rotation.x *= 0.98;
-        }
-        
-        if (speed > 20) {
-            this.rotation.y += Math.sin(this.rotation.z) * 0.3 * delta;
-        }
     }
     
     reset() {
@@ -824,6 +650,10 @@ var spinnerStripeBottom = new THREE.Mesh(
         // Clear any residual physics state
         this.controlInput = { pitch: 0, roll: 0, yaw: 0 };
         this.throttle = 0.5;
+        
+        // Re-initialize physics
+        this.initPhysics();
+        
         this.ias = 0;
         this.groundSpeed = 0;
         this.crashed = false;
@@ -866,6 +696,180 @@ var spinnerStripeBottom = new THREE.Mesh(
         });
     }
     
+    
+    setHasFloats(enabled) {
+        this.hasFloats = enabled;
+        this.createLandingGear();
+    }
+    
+    createLandingGear() {
+        if (!this.mesh) return;
+        
+        // Remove existing landing gear
+        const gearToRemove = [];
+        this.mesh.traverse((child) => {
+            if (child.userData?.isLandingGear || child.userData?.isFloat) {
+                gearToRemove.push(child);
+            }
+        });
+        gearToRemove.forEach(child => {
+            if (child.parent) child.parent.remove(child);
+        });
+        
+        if (this.hasFloats) {
+            this.createFloats();
+        } else {
+            this.createWheels();
+        }
+    }
+    
+    createWheels() {
+        const wheelMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.85 });
+        const strutMat = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.3, metalness: 0.6 });
+        
+        // Nose wheel
+        const noseWheelY = -0.85;
+        const noseWheelZ = -2.3;
+        const mainWheelY = -0.9;
+        const mainWheelZ = 1.2;
+        const mainWheelSpread = 1.25;
+        
+        const noseAttachY = -0.25;
+        const noseAttachZ = -1.8;
+        const mainAttachY = -0.3;
+        const mainAttachX = 0.65;
+        
+        // Nose gear strut
+        const noseStrutLen = Math.sqrt(
+            Math.pow(noseWheelY - noseAttachY, 2) + 
+            Math.pow(noseWheelZ - noseAttachZ, 2)
+        );
+        const noseStrutAngle = Math.atan2(noseWheelY - noseAttachY, noseWheelZ - noseAttachZ);
+        
+        const noseStrut = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.05, 0.04, noseStrutLen, 8),
+            strutMat
+        );
+        noseStrut.position.set(0, (noseAttachY + noseWheelY) / 2, (noseAttachZ + noseWheelZ) / 2);
+        noseStrut.rotation.x = noseStrutAngle + Math.PI / 2;
+        noseStrut.userData = { isLandingGear: true, isStrut: true };
+        this.mesh.add(noseStrut);
+        
+        // Nose wheel
+        const noseWheel = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.16, 0.16, 0.1, 14),
+            wheelMat
+        );
+        noseWheel.rotation.z = Math.PI / 2;
+        noseWheel.position.set(0, noseWheelY, noseWheelZ);
+        noseWheel.userData = { isLandingGear: true, isWheel: true };
+        this.mesh.add(noseWheel);
+        
+        // Main gear
+        [-1, 1].forEach(side => {
+            const outwardAngle = Math.atan2(mainWheelSpread - mainAttachX, mainAttachY - mainWheelY);
+            
+            const strut = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.06, 0.05, Math.abs(mainAttachY - mainWheelY) + 0.1, 8),
+                strutMat
+            );
+            strut.position.set(
+                side * (mainAttachX + mainWheelSpread) / 2,
+                (mainAttachY + mainWheelY) / 2,
+                mainWheelZ
+            );
+            strut.rotation.z = side * outwardAngle;
+            strut.userData = { isLandingGear: true, isStrut: true };
+            this.mesh.add(strut);
+            
+            const wheel = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.2, 0.2, 0.12, 14),
+                wheelMat
+            );
+            wheel.rotation.z = Math.PI / 2;
+            wheel.position.set(side * mainWheelSpread, mainWheelY, mainWheelZ);
+            wheel.userData = { isLandingGear: true, isWheel: true };
+            this.mesh.add(wheel);
+        });
+    }
+    
+    createFloats() {
+        // Use aircraft highlight color for floats (safety orange by default, matches stripe color)
+        // Use a neutral metal color for struts
+        const floatColor = this.colors.highlight || '#ff8c00';
+        const floatMat = new THREE.MeshStandardMaterial({ 
+            color: floatColor, 
+            roughness: 0.3, 
+            metalness: 0.1 
+        });
+        const strutMat = new THREE.MeshStandardMaterial({ 
+            color: 0x666666, 
+            roughness: 0.4, 
+            metalness: 0.6 
+        });
+        
+        // Float dimensions for Cessna 182 Skylane
+        const floatY = -0.9;
+        const floatZOffset = 0.2;
+        const floatLength = 6.0;
+        const floatWidth = 0.55;
+        const floatSpread = 1.4;
+        
+        this.floatsGroup = new THREE.Group();
+        
+        [-1, 1].forEach(side => {
+            // Single float body - tapered capsule shape using scaled cylinder
+            const floatBodyGeo = new THREE.CylinderGeometry(floatWidth * 0.6, floatWidth * 0.85, floatLength, 10);
+            floatBodyGeo.rotateX(Math.PI / 2);
+            floatBodyGeo.scale(1, 1, 0.85); // Flatten slightly
+            const floatBody = new THREE.Mesh(floatBodyGeo, floatMat);
+            floatBody.position.set(side * floatSpread, floatY, floatZOffset);
+            floatBody.userData = { isFloat: true, isStripe: true }; // Mark as stripe to inherit color changes
+            this.mesh.add(floatBody);
+            
+            // Strut positions: forward, aft, and diagonal
+            const strutConfigs = [
+                { fx: side * 0.35, fy: -0.15, fz: -1.2, tx: side * floatSpread, ty: floatY + 0.2, tz: floatZOffset - 1.5 },
+                { fx: side * 0.35, fy: -0.15, fz: 0.8, tx: side * floatSpread, ty: floatY + 0.2, tz: floatZOffset + 1.5 },
+                { fx: side * 0.3, fy: -0.2, fz: 0.0, tx: side * floatSpread * 0.7, ty: floatY + 0.3, tz: floatZOffset }
+            ];
+            
+            strutConfigs.forEach(config => {
+                const strutLen = Math.sqrt(
+                    Math.pow(config.tx - config.fx, 2) +
+                    Math.pow(config.ty - config.fy, 2) +
+                    Math.pow(config.tz - config.fz, 2)
+                );
+                
+                const strut = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.035, 0.025, strutLen, 6),
+                    strutMat
+                );
+                
+                // Position at midpoint and orient toward fuselage attachment
+                strut.position.set(
+                    (config.fx + config.tx) / 2,
+                    (config.fy + config.ty) / 2,
+                    (config.fz + config.tz) / 2
+                );
+                strut.lookAt(config.fx, config.fy, config.fz);
+                strut.userData = { isFloat: true, isStrut: true };
+                this.mesh.add(strut);
+            });
+        });
+        
+        // Single cross-brace connecting floats (at the step/walkway position)
+        const braceLen = floatSpread * 2.1;
+        const brace = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.04, 0.04, braceLen, 8),
+            strutMat
+        );
+        brace.rotation.z = Math.PI / 2;
+        brace.position.set(0, floatY + 0.25, floatZOffset + 0.8);
+        brace.userData = { isFloat: true, isStrut: true };
+        this.mesh.add(brace);
+    }
+    
     checkCrash() {
         if (this.crashed) return true;
         
@@ -873,22 +877,21 @@ var spinnerStripeBottom = new THREE.Mesh(
         if (this.abbyMode) return false;
         
         // Get terrain height at current position
-        // This now returns the actual mesh vertex height (scaled by 0.15)
         let terrainHeight = -50; // Default ocean level
         if (typeof getTerrainHeight === 'function') {
             terrainHeight = getTerrainHeight(this.position.x, this.position.z);
         }
         
-        // Check for water collision (ocean crash)
+        // Check for water collision
         const baseWaterLevel = typeof WATER_LEVEL !== 'undefined' ? WATER_LEVEL : 2;
-
-        // Sample dynamic ocean height if available (only in non-Abby mode)
+        
+        // Sample dynamic ocean height if available
         let effectiveWaterLevel = baseWaterLevel;
-        if (!this.abbyMode && window.oceanManager) {
-          const waveHeight = window.oceanManager.getHeight(this.position.x, this.position.z);
-          effectiveWaterLevel = baseWaterLevel + waveHeight * 0.85; // Slightly dampen for collision buffer
+        if (window.oceanManager) {
+            const waveHeight = window.oceanManager.getHeight(this.position.x, this.position.z);
+            effectiveWaterLevel = baseWaterLevel + waveHeight * 0.85;
         }
-
+        
         const isBelowWater = this.position.y < effectiveWaterLevel;
         
         // Check if plane is below terrain (land collision)
@@ -901,7 +904,17 @@ var spinnerStripeBottom = new THREE.Mesh(
         const isMoving = speed > 15;
         const isFalling = this.velocity.y < -5;
         
-        // Crash if: below water OR below terrain (and moving or falling)
+        // With floats: allow water landing, but still crash on terrain
+        if (this.hasFloats && isBelowWater) {
+            // Floats mode: no crash on water, will be handled by buoyancy physics
+            this.waterPhysics.isOnWater = true;
+            this.waterPhysics.waterLevel = effectiveWaterLevel;
+            return false;
+        }
+        
+        this.waterPhysics.isOnWater = false;
+        
+        // Crash if: below water (without floats) OR below terrain (and moving or falling)
         if ((isBelowWater || isBelowTerrain) && (isMoving || isFalling)) {
             this.crashed = true;
             this.velocity.set(0, 0, 0);
@@ -911,6 +924,26 @@ var spinnerStripeBottom = new THREE.Mesh(
         }
         
         return false;
+    }
+    
+    initPhysics() {
+        if (this.physicsMode === 'arcade') {
+            this.physics = new ArcadePhysics(this);
+        } else {
+            this.physics = new RealisticPhysics(this);
+        }
+    }
+    
+    setPhysicsMode(mode) {
+        if (this.physicsMode === mode) return;
+        
+        this.physicsMode = mode;
+        this.initPhysics();
+        
+        // Reset angular velocity for realistic mode
+        if (mode === 'realistic' && this.physics.angularVelocity) {
+            this.physics.angularVelocity = { pitch: 0, roll: 0, yaw: 0 };
+        }
     }
 }
 

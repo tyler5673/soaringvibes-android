@@ -16,10 +16,11 @@ class OrbitCamera {
         this.smoothness = 6;
         
         this.heightOffset = 4;
-        this.lookAheadDistance = 8;
         
         this.currentPosition = new THREE.Vector3();
-        this.currentLookAt = new THREE.Vector3();
+        
+        this.followHeading = true;
+        this.headingSmoothing = 2;
     }
     
     handleMouseInput(deltaX, deltaY) {
@@ -38,6 +39,19 @@ class OrbitCamera {
         
         const targetPos = this.target.position.clone();
         
+        if (this.followHeading) {
+            const targetHeading = this.target.rotation.y;
+            
+            let diff = targetHeading - this.azimuth;
+            while (diff > Math.PI) diff -= Math.PI * 2;
+            while (diff < -Math.PI) diff += Math.PI * 2;
+            
+            if (Math.abs(diff) > 0.001) {
+                const t = 1 - Math.exp(-this.headingSmoothing * delta);
+                this.azimuth += diff * t;
+            }
+        }
+        
         const offset = new THREE.Vector3(
             Math.sin(this.azimuth) * Math.cos(this.elevation) * this.distance,
             Math.sin(this.elevation) * this.distance,
@@ -51,12 +65,8 @@ class OrbitCamera {
         const t = 1 - Math.exp(-this.smoothness * delta);
         this.currentPosition.lerp(desiredPosition, t);
         
-        const lookAhead = new THREE.Vector3(0, 0, -this.lookAheadDistance);
-        lookAhead.applyEuler(this.target.rotation);
-        this.currentLookAt.lerp(targetPos.clone().add(lookAhead), t);
-        
         this.camera.position.copy(this.currentPosition);
-        this.camera.lookAt(this.currentLookAt);
+        this.camera.lookAt(targetPos);
     }
     
     resetBehindTarget() {
@@ -75,9 +85,8 @@ class OrbitCamera {
         offset.y += this.heightOffset;
         
         this.currentPosition.copy(targetPos.clone().add(offset));
-        this.currentLookAt.copy(targetPos);
         
         this.camera.position.copy(this.currentPosition);
-        this.camera.lookAt(this.currentLookAt);
+        this.camera.lookAt(targetPos);
     }
 }

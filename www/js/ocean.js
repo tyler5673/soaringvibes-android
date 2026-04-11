@@ -3,33 +3,81 @@ class WaveSystem {
   constructor() {
     this.time = 0;
     
+    // Multipliers for external control (0-1 range, default 0.15 = what 15% was before)
+    this.heightMultiplier = 0.10;
+    this.speedMultiplier = 0.5;
+    this.steepnessMultiplier = 0.5;
+    
+    // Base amplitudes, speeds, steepness, and wavelengths for reference (200ft max swell = ~61m)
+    this.baseAmplitudes = [30.5, 12.2, 3.0];
+    this.baseSpeeds = [2, 4, 6.67];
+    this.baseSteepness = [0.5, 0.4, 0.2];
+    this.baseLengths = [100, 30, 8];
+    
     // Gerstner wave configuration (3 systems for hybrid realism)
     this.waves = [
       // Swell: Long wavelength base waves
       {
         direction: new THREE.Vector2(1, 0.3).normalize(),
-        amplitude: 1.0,
+        amplitude: 30.5,
         length: 100,
-        steepness: 0.7,
+        steepness: 0.5,
         speed: 2
       },
       // Chop: Medium wind-driven waves
       {
         direction: new THREE.Vector2(0.5, -1).normalize(),
-        amplitude: 0.4,
+        amplitude: 12.2,
         length: 30,
-        steepness: 0.5,
+        steepness: 0.4,
         speed: 4
       },
       // Ripple: Short surface detail
       {
         direction: new THREE.Vector2(-0.7, 0.9).normalize(),
-        amplitude: 0.1,
+        amplitude: 3.0,
         length: 8,
-        steepness: 0.3,
+        steepness: 0.2,
         speed: 6.67
       }
     ];
+    
+    this.updateWaveParameters();
+  }
+  
+  setHeightMultiplier(multiplier) {
+    this.heightMultiplier = Math.max(0, Math.min(1, multiplier));
+    this.updateWaveParameters();
+  }
+  
+  setSpeedMultiplier(multiplier) {
+    this.speedMultiplier = Math.max(0, Math.min(1, multiplier));
+    this.updateWaveParameters();
+  }
+  
+  setSteepnessMultiplier(multiplier) {
+    this.steepnessMultiplier = Math.max(0, Math.min(1, multiplier));
+    this.updateWaveParameters();
+  }
+  
+  updateWaveParameters() {
+    for (let i = 0; i < this.waves.length; i++) {
+      const wave = this.waves[i];
+      const baseAmp = this.baseAmplitudes[i];
+      const baseSpeed = this.baseSpeeds[i];
+      const baseSteep = this.baseSteepness[i];
+      const baseLen = this.baseLengths[i];
+      
+      // Height affects amplitude (at 0, waves are flat; at 1, full amplitude)
+      wave.amplitude = baseAmp * this.heightMultiplier * 2;
+      // Speed affects wave movement (at 0, static; at 1, full speed)
+      wave.speed = baseSpeed * (0.1 + this.speedMultiplier * 0.9);
+      // Steepness controlled by user slider (0 = flat/wide, 1 = peaked/steep)
+      wave.steepness = baseSteep * this.steepnessMultiplier * 2;
+      // Width: lower steepness = longer wavelength = flatter/wider waves
+      // Range from 0.5x to 4x base wavelength
+      wave.length = baseLen * (0.5 + (1 - this.steepnessMultiplier) * 3);
+    }
   }
   
   update(deltaTime) {
@@ -214,13 +262,13 @@ class OceanManager {
   createRings(waterY) {
     // Create concentric rings (edge to edge, no overlap)
     const configs = this.mobileMode ? [
-      { inner: 0, outer: 2000, segments: 64, intensity: 1.0, color: 0x40c4ff },   // Center disk
-      { inner: 2000, outer: 7000, segments: 32, intensity: 0.5, color: 0x5ecfff }, // Middle ring
-      { inner: 7000, outer: 14000, segments: 16, intensity: 0.2, color: 0x7dd8ff } // Outer ring (fog hides edge)
+      { inner: 0, outer: 500, segments: 48, intensity: 1.0, color: 0x40c4ff },   // Center disk
+      { inner: 500, outer: 2000, segments: 48, intensity: 1.0, color: 0x40c4ff }, // Middle ring
+      { inner: 2000, outer: 5000, segments: 48, intensity: 1.0, color: 0x40c4ff } // Outer ring (fog hides edge)
     ] : [
-      { inner: 0, outer: 3000, segments: 96, intensity: 1.0, color: 0x40c4ff },   // Center disk
-      { inner: 3000, outer: 9000, segments: 48, intensity: 0.5, color: 0x5ecfff }, // Middle ring
-      { inner: 9000, outer: 18000, segments: 24, intensity: 0.2, color: 0x7dd8ff } // Outer ring (fog hides edge)
+      { inner: 0, outer: 5000, segments: 96, intensity: 1.0, color: 0x40c4ff },   // Center disk
+      { inner: 5000, outer: 12000, segments: 96, intensity: 1.0, color: 0x40c4ff }, // Middle ring
+      { inner: 12000, outer: 25000, segments: 96, intensity: 1.0, color: 0x40c4ff } // Outer ring (fog hides edge)
     ];
     
     const baseMaterial = new THREE.MeshStandardMaterial({
@@ -282,6 +330,7 @@ class OceanManager {
         const tile = new THREE.Mesh(geometry, material.clone());
         tile.rotation.x = -Math.PI / 2;
         tile.position.y = floorY;
+        tile.renderOrder = -1;  // Render behind water surface
         tile.renderOrder = -1;
         this.scene.add(tile);
         this.oceanFloorTiles.push(tile);
@@ -293,43 +342,31 @@ class OceanManager {
     // Update wave time
     this.waveSystem.update(deltaTime);
     
-    // Reposition rings if camera moved significantly
+    // Center rings on camera every frame for seamless coverage
     if (this.camera && this.camera.position) {
       const camX = this.camera.position.x;
       const camZ = this.camera.position.z;
       
-      const dist = Math.sqrt(
-        Math.pow(camX - this.lastCameraPos.x, 2) + 
-        Math.pow(camZ - this.lastCameraPos.z, 2)
-      );
+      for (const ring of this.rings) {
+        ring.mesh.position.x = camX;
+        ring.mesh.position.z = camZ;
+      }
       
-      if (dist > 50) { // Reposition threshold
-        const snapX = Math.floor(camX / this.gridSize) * this.gridSize;
-        const snapZ = Math.floor(camZ / this.gridSize) * this.gridSize;
+      // Move ocean floor tiles to follow camera
+      if (this.oceanFloorTiles && this.oceanFloorTiles.length > 0) {
+        const halfGrid = Math.floor(this.oceanFloorGridSize / 2);
+        const tileSize = this.oceanFloorTileSize;
+        let tileIndex = 0;
         
-        for (const ring of this.rings) {
-          ring.mesh.position.x = snapX;
-          ring.mesh.position.z = snapZ;
-        }
-        
-        // Move ocean floor tiles to follow camera
-        if (this.oceanFloorTiles && this.oceanFloorTiles.length > 0) {
-          const halfGrid = Math.floor(this.oceanFloorGridSize / 2);
-          const tileSize = this.oceanFloorTileSize;
-          let tileIndex = 0;
-          
-          for (let gx = -halfGrid; gx < halfGrid; gx++) {
-            for (let gz = -halfGrid; gz < halfGrid; gz++) {
-              if (tileIndex < this.oceanFloorTiles.length) {
-                this.oceanFloorTiles[tileIndex].position.x = snapX + gx * tileSize;
-                this.oceanFloorTiles[tileIndex].position.z = snapZ + gz * tileSize;
-                tileIndex++;
-              }
+        for (let gx = -halfGrid; gx < halfGrid; gx++) {
+          for (let gz = -halfGrid; gz < halfGrid; gz++) {
+            if (tileIndex < this.oceanFloorTiles.length) {
+              this.oceanFloorTiles[tileIndex].position.x = camX + gx * tileSize;
+              this.oceanFloorTiles[tileIndex].position.z = camZ + gz * tileSize;
+              tileIndex++;
             }
           }
         }
-        
-        this.lastCameraPos.set(camX, this.camera.position.y, camZ);
       }
     }
     
@@ -342,26 +379,21 @@ class OceanManager {
   updateRingWaves(ring) {
     const positions = ring.geometry.attributes.position;
     const intensity = ring.mesh.userData.waveIntensity;
-    const oceanPos = ring.mesh.position;
     
     let changed = false;
     
     for (let i = 0; i < positions.count; i++) {
-      // Ring geometry has vertices in XY plane with Z=0 initially
+      // Sample wave in local space so pattern moves with camera seamlessly
       const localX = positions.getX(i);
       const localY = positions.getY(i);
       
-      // After -90° X rotation: local (x, y, z) → world (x, z, -y) + mesh position
-      const worldX = oceanPos.x + localX;
-      const worldZ = oceanPos.z - localY; // Local Y becomes negative Z after rotation
-      
-      // Sample wave height at this world X,Z position
-      let waveHeight = this.waveSystem.getHeight(worldX, worldZ);
+      // After -90° X rotation: local Y maps to -Z in world
+      let waveHeight = this.waveSystem.getHeight(localX, -localY);
       
       // Apply intensity dampening for LOD
       waveHeight *= intensity;
       
-      // Set local Z to wave height (becomes -Y in world space after rotation)
+      // Set local Z to wave height
       if (Math.abs(waveHeight - positions.getZ(i)) > 0.01) {
         positions.setZ(i, waveHeight);
         changed = true;
@@ -378,3 +410,249 @@ class OceanManager {
     return this.waveSystem.getHeight(x, z);
   }
 }
+
+// ========== WATER SPLASH EFFECTS ==========
+class WaterSplashSystem {
+  constructor(scene) {
+    this.scene = scene;
+    this.splashes = [];
+    this.maxSplashes = 200; // Max concurrent splash particles
+    
+    // Create a simple circular particle texture using canvas
+    this.particleTexture = this.createParticleTexture();
+    
+    // Pre-create a pool of splash sprites
+    this.splashPool = [];
+    this.createSplashPool();
+  }
+  
+  createParticleTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 32;
+    canvas.height = 32;
+    const ctx = canvas.getContext('2d');
+    
+    // Draw a soft white circle with radial gradient
+    const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    gradient.addColorStop(0.4, 'rgba(220, 240, 255, 0.8)');
+    gradient.addColorStop(0.7, 'rgba(180, 220, 255, 0.4)');
+    gradient.addColorStop(1, 'rgba(150, 200, 255, 0)');
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 32, 32);
+    
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.needsUpdate = true;
+    return texture;
+  }
+  
+  createSplashPool() {
+    const material = new THREE.SpriteMaterial({
+      map: this.particleTexture,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+    
+    for (let i = 0; i < this.maxSplashes; i++) {
+      const sprite = new THREE.Sprite(material.clone());
+      sprite.visible = false;
+      sprite.scale.set(1, 1, 1);
+      this.scene.add(sprite);
+      this.splashPool.push({
+        sprite: sprite,
+        active: false,
+        life: 0,
+        maxLife: 0,
+        velocity: new THREE.Vector3(),
+        startScale: 1
+      });
+    }
+  }
+  
+  spawnSplash(position, intensity, type = 'landing') {
+    // Find inactive splash from pool
+    const splash = this.splashPool.find(s => !s.active);
+    if (!splash) return; // Pool exhausted
+    
+    const { sprite } = splash;
+    
+    // Configure based on splash type
+    let particleCount, size, life, spread;
+    
+    if (type === 'landing') {
+      // Hard landing - big splash
+      particleCount = Math.floor(intensity * 8) + 3;
+      size = 1.5 + intensity * 2;
+      life = 1.0 + intensity * 0.5;
+      spread = 2 + intensity * 3;
+    } else if (type === 'wake') {
+      // Moving on water - wake spray
+      particleCount = Math.floor(intensity * 4) + 1;
+      size = 0.8 + intensity * 0.5;
+      life = 0.6 + intensity * 0.3;
+      spread = 1 + intensity * 1.5;
+    } else {
+      // Light contact
+      particleCount = 2;
+      size = 0.6;
+      life = 0.4;
+      spread = 0.8;
+    }
+    
+    // Activate main splash particle
+    splash.active = true;
+    splash.life = life;
+    splash.maxLife = life;
+    splash.startScale = size;
+    
+    sprite.visible = true;
+    sprite.position.copy(position);
+    sprite.position.y += 0.3; // Slightly above water
+    sprite.scale.set(size, size, 1);
+    sprite.material.opacity = 0.7;
+    
+    // Spawn additional particles for bigger splashes
+    const spawnedParticles = [splash];
+    for (let i = 1; i < particleCount && i < 5; i++) {
+      const extraSplash = this.splashPool.find(s => !s.active && !spawnedParticles.includes(s));
+      if (!extraSplash) break;
+      
+      extraSplash.active = true;
+      extraSplash.life = life * (0.7 + Math.random() * 0.4);
+      extraSplash.maxLife = extraSplash.life;
+      extraSplash.startScale = size * (0.5 + Math.random() * 0.5);
+      
+      extraSplash.sprite.visible = true;
+      extraSplash.sprite.position.copy(position);
+      // Random offset in splash area
+      const angle = Math.random() * Math.PI * 2;
+      const radius = Math.random() * spread * 0.5;
+      extraSplash.sprite.position.x += Math.cos(angle) * radius;
+      extraSplash.sprite.position.z += Math.sin(angle) * radius;
+      extraSplash.sprite.position.y += Math.random() * 0.5;
+      
+      extraSplash.sprite.scale.set(extraSplash.startScale, extraSplash.startScale, 1);
+      extraSplash.sprite.material.opacity = 0.5 + Math.random() * 0.3;
+      
+      // Upward velocity for spray effect
+      extraSplash.velocity.set(
+        (Math.random() - 0.5) * spread * 0.3,
+        1 + Math.random() * 2,
+        (Math.random() - 0.5) * spread * 0.3
+      );
+      
+      spawnedParticles.push(extraSplash);
+    }
+    
+    this.splashes.push(...spawnedParticles);
+  }
+  
+  update(deltaTime) {
+    // Update all active splashes
+    for (let i = this.splashes.length - 1; i >= 0; i--) {
+      const splash = this.splashes[i];
+      if (!splash.active) continue;
+      
+      splash.life -= deltaTime;
+      
+      if (splash.life <= 0) {
+        // Deactivate
+        splash.active = false;
+        splash.sprite.visible = false;
+        splash.sprite.material.opacity = 0;
+        this.splashes.splice(i, 1);
+        continue;
+      }
+      
+      const lifeRatio = splash.life / splash.maxLife;
+      
+      // Apply velocity to additional particles
+      if (splash.velocity && splash.velocity.lengthSq() > 0) {
+        splash.sprite.position.addScaledVector(splash.velocity, deltaTime);
+        // Gravity
+        splash.velocity.y -= 4.0 * deltaTime;
+      }
+      
+      // Scale down and fade out
+      const currentScale = splash.startScale * (0.3 + lifeRatio * 0.7);
+      splash.sprite.scale.set(currentScale, currentScale, 1);
+      splash.sprite.material.opacity = lifeRatio * 0.7;
+    }
+  }
+  
+  // Helper method called from physics to create splash at float positions
+  createFloatSplashes(aircraft) {
+    if (!aircraft.hasFloats || !aircraft.waterPhysics.isOnWater) return;
+    
+    const speed = aircraft.velocity.length();
+    const verticalSpeed = Math.abs(aircraft.velocity.y);
+    const waterLevel = aircraft.waterPhysics.waterLevel || 2;
+    
+    // Calculate float contact positions
+    const floatSpread = 1.4;
+    const floatZOffset = 0.2;
+    const floatY = -0.9;
+    
+    // Check each float
+    [-1, 1].forEach(side => {
+      const floatWorldPos = new THREE.Vector3(
+        aircraft.position.x + side * floatSpread,
+        aircraft.position.y + floatY,
+        aircraft.position.z + floatZOffset
+      );
+      
+      // Check if float is touching/submerged in water
+      const waterHeightAtPos = this.getWaterHeightAt(floatWorldPos.x, floatWorldPos.z);
+      const submersion = waterHeightAtPos - floatWorldPos.y;
+      
+      if (submersion > 0.1) {
+        // Determine splash intensity based on conditions
+        let intensity = 0;
+        let type = 'contact';
+        
+        // Hard landing detection (high vertical speed)
+        if (verticalSpeed > 3) {
+          intensity = Math.min(verticalSpeed / 8, 1.5);
+          type = 'landing';
+        }
+        // Wake from speed
+        else if (speed > 10) {
+          intensity = Math.min((speed - 10) / 20, 0.8);
+          type = 'wake';
+        }
+        // Light contact
+        else if (submersion > 0.2) {
+          intensity = 0.3;
+          type = 'contact';
+        }
+        
+        // Spawn splash if intensity is sufficient
+        if (intensity > 0.1) {
+          // Add some randomness to splash position along the float
+          const randomOffset = (Math.random() - 0.5) * 2.0;
+          const splashPos = new THREE.Vector3(
+            floatWorldPos.x,
+            waterHeightAtPos,
+            floatWorldPos.z + randomOffset
+          );
+          
+          this.spawnSplash(splashPos, intensity, type);
+        }
+      }
+    });
+  }
+  
+  getWaterHeightAt(x, z) {
+    // Get base water level plus wave height
+    const baseLevel = typeof WATER_LEVEL !== 'undefined' ? WATER_LEVEL : 2;
+    if (window.oceanManager) {
+      return baseLevel + window.oceanManager.getHeight(x, z) * 0.85;
+    }
+    return baseLevel;
+  }
+}
+
+window.WaterSplashSystem = WaterSplashSystem;
